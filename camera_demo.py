@@ -1,9 +1,3 @@
-"""
-Author: Amr Elsersy
-email: amrelsersay@gmail.com
------------------------------------------------------------------------------------
-Description: Live Camera Demo using opencv dnn face detection & Emotion Recognition
-"""
 import enum
 import sys
 import time
