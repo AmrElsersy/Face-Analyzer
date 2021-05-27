@@ -1,7 +1,7 @@
 import torch
 import torch.nn as nn
-from .resnet import BasicBlock, ResNet
-from .masking import masking
+from resnet import BasicBlock, ResNet
+from masking import masking
 
 
 class ResMasking(ResNet):

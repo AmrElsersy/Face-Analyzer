@@ -1,8 +1,7 @@
 import traceback
 import torch
 import torch.nn as nn
-from .resnet import conv1x1, BasicBlock, Bottleneck
-
+from resnet import conv1x1, BasicBlock, Bottleneck
 
 def up_pooling(in_channels, out_channels, kernel_size=2, stride=2):
     return nn.Sequential(
