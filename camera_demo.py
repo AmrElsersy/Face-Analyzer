@@ -1,20 +1,18 @@
-import enum
 import sys
 import time
 import argparse
 import cv2
-import numpy as np
-import torch
 import torch
 from face_detector.face_detector import DnnDetector, HaarCascadeDetector
 from utils import normalization, histogram_equalization, standerlization
 from face_alignment.face_alignment import FaceAlignment
+from emotion_recognizer.emotion_recognition import recognize_face
 
 sys.path.insert(1, 'face_detector')
 device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 
 def get_emotion(face):
-    return "ray2"
+    return recognize_face(face)
 
 def get_focus(face):
     return True
@@ -75,23 +73,33 @@ def main(args):
 
                 # preprocessing
                 input_face = face_alignment.frontalize_face(face, frame)
-                emotion = get_emotion(input_face)
+                emotion_prob, emotion_label = get_emotion(input_face)
                 focus = get_focus(input_face)
                 info = {
-                    'emotion': emotion,
+                    'emotion': emotion_label,
                     'focus': focus
                 }
 
                 faces_info.append(info)
 
                 cv2.imshow('input face', cv2.resize(input_face, (120, 120)))
-                cv2.rectangle(frame, (x,y), (x+w, y+h), (0,200,200), 3)
+                cv2.rectangle(frame, (x, y), (x + w, y + h), (0, 200, 200), 3)
+                cv2.putText(
+                    frame,
+                    "{} {}".format(emotion_label, int(emotion_prob * 100)),
+                    (x+w, y + 1),
+                    cv2.FONT_HERSHEY_SIMPLEX,
+                    0.8,
+                    (0, 200, 200),
+                    2,
+                )
 
         # draw FPS     
         cv2.putText(frame, str(fps), (10,25), cv2.FONT_HERSHEY_SIMPLEX, 1, (0,255,0))
         cv2.imshow("Video", frame)   
         if cv2.waitKey(1) & 0xff == 27:
-            video.release()
+            if not args.image:
+                video.release()
             break
     
     return faces_info

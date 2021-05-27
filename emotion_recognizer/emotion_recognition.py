@@ -3,7 +3,7 @@ import cv2
 import numpy as np
 import torch
 from torchvision.transforms import transforms
-from resmasking import resmasking_dropout1
+from .resmasking import resmasking_dropout1
 
 transform = transforms.Compose([transforms.ToPILImage(), transforms.ToTensor()])
 
