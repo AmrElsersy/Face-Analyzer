@@ -10,6 +10,7 @@ __pycache__/
 CK+48/
 *.0
 tensorboard/
+shape_predictor_68_face_landmarks.dat
 # C extensions
 *.so
 .vscode/
