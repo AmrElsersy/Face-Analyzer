@@ -11,7 +11,7 @@ from matplotlib.backends.backend_qt5agg import FigureCanvasQTAgg as FigureCanvas
 from matplotlib.backends.backend_qt5agg import NavigationToolbar2QT as NavigationToolbar
 from matplotlib.figure import Figure
 from matplotlib.lines import Line2D
-from matplotlib.animation import TimedAnimation
+from matplotlib.animation import TimedAnimation, FuncAnimation
 from matplotlib.ticker import MaxNLocator
 
 import time
@@ -51,55 +51,46 @@ from utils import processData
 
 class Histogram(FigureCanvas):
     def __init__(self):
-        super(Histogram, self).__init__()
-        
-        # window requirements
-        self.setGeometry(200,200,600,400)
-        self.setWindowTitle("Histogram")
-        self.setWindowIcon(QIcon("icon.png"))
-
-        # change the color of the window
-        self.setStyleSheet('background-color:white')
         self.features = ['angry','disgust', 'fear', 'happy', 'sad', 'surprise', 'neutral']
-        fig, ax = self.__create_hist()
-        self.add_data(data=None)
-        vbox = QHBoxLayout()
-        vbox.addWidget(ax)
-
-        self.setLayout(vbox)
-
+        # self.fig, self.ax = self.__create_hist()
+        self.fig, ax = plt.subplots()
+        self.patches = ax.bar(self.features, generateRandData() ,lw=1, ec="yellow", fc="green", alpha=0.5)
+    
     def add_data(self, data):
-        pass
+        ani = animation.FuncAnimation(self.fig, self.__animate(self.patches, data), blit=True, interval=100,
+                                            frames=10,
+                                            repeat=False)
+        plt.show()
 
     def __create_hist(self):
         fig, ax = plt.subplots()
-        patches = ax.bar(self.features, generateRandData() ,lw=1, ec="yellow", fc="green", alpha=0.5)
-        ani = animation.FuncAnimation(fig, self.__animate(patches), blit=True, interval=1000,
-                                    frames=1,
-                                    repeat=False)
+        self.patches = ax.bar(self.features, generateRandData() ,lw=1, ec="yellow", fc="green", alpha=0.5)
         return fig, ax
 
-    def __animate(self, patches):
-        n = generateRandData()
-        for rect, h in zip(patches, n):
+    def __animate(self, patches, data):
+        for rect, h in zip(patches, data):
             rect.set_height(h)
         return patches
 
 
+# hist = Histogram()
+# frames = 10
+# for i in range(frames):
+#     print(i)
+#     hist.add_data(generateRandData())
 
-
-import sys
-def main():
-    app = QtWidgets.QApplication(sys.argv)
-    main = Histogram()
-    # main = MainWidget()
-    main.show()
-    sys.exit(app.exec_())
+# plt.show()
+# import sys
+# def main():
+#     app = QtWidgets.QApplication(sys.argv)
+#     main = Histogram()
+#     # main = MainWidget()
+#     main.show()
+#     sys.exit(app.exec_())
     
     
-if __name__ == "__main__":
-    main()
-
+# if __name__ == "__main__":
+#     main()
 
 
 def dataSend(addData_callbackFunc):
@@ -113,19 +104,21 @@ def dataSend(addData_callbackFunc):
         signal.thread_signal.emit(data)
 
 
-# def animate(frameno):
-#     n = generateRandData()
-#     for rect, h in zip(patches, n):
-#         rect.set_height(h)
-#     return patches
+def animate(frameno):
+    n = generateRandData()
+    for rect, h in zip(patches, n):
+        rect.set_height(h)
+    return patches
 
-# fig, ax = plt.subplots()
+fig, ax = plt.subplots()
 
-# # print(bar_container)
-# patches = ax.bar(features, generateRandData() ,lw=1, ec="yellow", fc="green", alpha=0.5)
-# # ax.set_ylim(top=55)  # set safe limit to ensure that all data is visible.
-# frames = 100
-# ani = animation.FuncAnimation(fig, animate, blit=True, interval=100,
-#                               frames=frames,
-#                               repeat=False)
-# plt.show()
+
+features = ['angry','disgust', 'fear', 'happy', 'sad', 'surprise', 'neutral']
+
+# print(bar_container)
+patches = ax.bar(features, generateRandData() ,lw=1, ec="yellow", fc="green", alpha=0.5)
+frames = 100
+ani = animation.FuncAnimation(fig, animate, blit=True, interval=100,
+                              frames=10,
+                              repeat=False)
+plt.show()
