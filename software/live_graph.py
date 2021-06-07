@@ -227,12 +227,17 @@ class CustomFigGraph(FigureCanvas, TimedAnimation):
 
         t = np.linspace(0, self.time - 1, num=self.time)
 
+        lines = []
         for i in range(len(self.current_features)):
             self.lines[i].set_data(t, self.current_features[i])
             if not self.status[i]:
                 self.lines[i].set_visible(False)
             else:
                 self.lines[i].set_visible(True)
+                lines.append(self.lines[i])
+
+        features = [feature[0] for i, feature in enumerate(self.features) if self.status[i]]
+        self.ax.legend(lines, features, bbox_to_anchor=(0.915, 1.15), loc='upper left', borderaxespad=0.)
 
         self._drawn_artists = self.lines
 
