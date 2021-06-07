@@ -1,7 +1,6 @@
 # import required library for GUI
-from PyQt5.QtWidgets import QApplication,QWidget, QVBoxLayout, QHBoxLayout, QGroupBox, QCheckBox
+from PyQt5.QtWidgets import QApplication, QWidget, QVBoxLayout, QHBoxLayout, QGroupBox, QCheckBox
 from PyQt5.QtGui import QIcon, QPalette, QColor, QFont
-from PyQt5.QtCore import QObject, pyqtSignal
 from PyQt5 import QtGui
 
 # import matplotlib backend and figure
@@ -12,22 +11,14 @@ from matplotlib.lines import Line2D
 from matplotlib.animation import TimedAnimation
 from matplotlib.ticker import MaxNLocator
 
-from utils import processData
+from utils import processData, dataSend, Status
 
 import matplotlib
 import numpy as np
-import sys
-import time
 import threading
+import sys
 
 matplotlib.use("Qt5Agg")
-
-class Thread(QObject):
-    thread_signal = pyqtSignal(list)
-
-class Status(QObject):
-    status_signal = pyqtSignal(list)
-
 
 class Live_Graph(QWidget):
     def __init__(self):
@@ -36,25 +27,25 @@ class Live_Graph(QWidget):
 
         self.read_status = Status()
 
-        # set title  and geometry for the window
-        self.setWindowTitle("Live Statistics")
-        self.setGeometry(500, 400, 800, 600)
-
-        # give orange background to the window
-        palette = self.palette()
-        palette.setColor(QPalette.Window,QColor(0, 128, 128))
-        self.setPalette(palette)
-        self.setAutoFillBackground(True)
-
-        # set minimum width and height for the window
-        self.setMinimumHeight(600)
-        self.setMinimumWidth(800)
-        self.setMaximumHeight(600)
-        self.setMaximumWidth(800)
-
-        # set icon for the application at run time and center the application window with the primary screen
-        self.setIcon()
-        self.center()
+        # # set title  and geometry for the window
+        # self.setWindowTitle("Live Statistics")
+        # self.setGeometry(500, 400, 800, 600)
+        #
+        # # give orange background to the window
+        # palette = self.palette()
+        # palette.setColor(QPalette.Window,QColor(0, 128, 128))
+        # self.setPalette(palette)
+        # self.setAutoFillBackground(True)
+        #
+        # # set minimum width and height for the window
+        # self.setMinimumHeight(600)
+        # self.setMinimumWidth(800)
+        # self.setMaximumHeight(600)
+        # self.setMaximumWidth(800)
+        #
+        # # set icon for the application at run time and center the application window with the primary screen
+        # self.setIcon()
+        # self.center()
 
         # setup the grid layout design and components
         self.createPlotLayout()
@@ -81,17 +72,17 @@ class Live_Graph(QWidget):
     def addData_callbackFunc(self, data):
         self.customFig.addData(data)
 
-    # set icon for the application
-    def setIcon(self):
-        appIcon = QIcon("icon.png")
-        self.setWindowIcon(appIcon)
-
-    # to center the application window at the beginning
-    def center(self):
-        qRect = self.frameGeometry()
-        centerPoint = QtGui.QGuiApplication.primaryScreen().availableGeometry().center()
-        qRect.moveCenter(centerPoint)
-        self.move(qRect.topLeft())
+    # # set icon for the application
+    # def setIcon(self):
+    #     appIcon = QIcon("graph.png")
+    #     self.setWindowIcon(appIcon)
+    #
+    # # to center the application window at the beginning
+    # def center(self):
+    #     qRect = self.frameGeometry()
+    #     centerPoint = QtGui.QGuiApplication.primaryScreen().availableGeometry().center()
+    #     qRect.moveCenter(centerPoint)
+    #     self.move(qRect.topLeft())
 
     def createCheckboxes(self):
         # make group box with headline then add the gridlayout to it
@@ -241,34 +232,9 @@ class CustomFigGraph(FigureCanvas, TimedAnimation):
 
         self._drawn_artists = self.lines
 
-def generateRandData(n):
-    data = []
-    for i in range(n):
-        status = {"angry": round(np.random.rand()),
-                  "disgust": round(np.random.rand()),
-                  "fear": round(np.random.rand()),
-                  "happy": round(np.random.rand()),
-                  "sad": round(np.random.rand()),
-                  "surprise": round(np.random.rand()),
-                  "neutral": round(np.random.rand()),
-                  "focus": round(np.random.rand())}
-        data.append(status)
-
-    return data
-
-def dataSend(addData_callbackFunc):
-    # setup the signal-slot mechanism.
-    signal = Thread()
-    signal.thread_signal.connect(addData_callbackFunc)
-    n = 1000
-    for i in range(n):
-        data = generateRandData(n)
-        time.sleep(1)
-        signal.thread_signal.emit(data)
-
 
 # run the application and show the window
-app = QApplication(sys.argv)
-window = Live_Graph()
-window.show()
-sys.exit(app.exec_())
+# app = QApplication(sys.argv)
+# window = Live_Graph()
+# window.show()
+# sys.exit(app.exec_())
