@@ -17,8 +17,6 @@ from utils import processData
 import matplotlib
 import numpy as np
 import sys
-import os
-import functools
 import time
 import threading
 
@@ -29,39 +27,21 @@ class Live_Graph(QWidget):
         # call the constructor of the parent (QWidget)
         super(Live_Graph, self).__init__()
 
-        self.features = [('angry', '#1f77b4'),
-                         ('disgust', '#ff7f0e'),
-                         ('fear', '#2ca02c'),
-                         ('happy', '#d62728'),
-                         ('sad', '#9467bd'),
-                         ('surprise', '#8c564b'),
-                         ('neutral', '#e377c2'),
-                         ('focus', '#7f7f7f')]
-        self.angry = []
-        self.disgust = []
-        self.fear = []
-        self.happy = []
-        self.sad = []
-        self.surprise = []
-        self.neutral = []
-        self.focus = []
-        self.time = 0
-
         # set title  and geometry for the window
         self.setWindowTitle("Live Statistics")
-        self.setGeometry(500,400,600,400)
+        self.setGeometry(500, 400, 800, 600)
 
         # give orange background to the window
         palette = self.palette()
-        palette.setColor(QPalette.Window,QColor(150,150,150))
+        palette.setColor(QPalette.Window,QColor(0, 128, 128))
         self.setPalette(palette)
         self.setAutoFillBackground(True)
 
         # set minimum width and height for the window
-        self.setMinimumHeight(400)
-        self.setMinimumWidth(600)
-        self.setMaximumHeight(400)
-        self.setMaximumWidth(600)
+        self.setMinimumHeight(600)
+        self.setMinimumWidth(800)
+        self.setMaximumHeight(600)
+        self.setMaximumWidth(800)
 
         # set icon for the application at run time and center the application window with the primary screen
         self.setIcon()
@@ -76,7 +56,7 @@ class Live_Graph(QWidget):
         self.setLayout(self.hbox)
 
         dataLoop = threading.Thread(name='dataLoop', target=dataSend, daemon=True,
-                                      args=(self.addData_callbackFunc,))
+                                    args=(self.addData_callbackFunc,))
         dataLoop.start()
 
     def addData_callbackFunc(self, data):
@@ -138,57 +118,14 @@ class Live_Graph(QWidget):
         self.groupBox.setLayout(self.vbox_checkboxes)
 
     def createPlotLayout(self):
-        # set the figure and toolbar and add it to the window
-        # self.fig = Figure(figsize=(9, 7), dpi=65, facecolor=(1, 1, 1), edgecolor=(0, 0, 0))
-        # self.canvas = FigureCanvas(self.fig)
-        # self.toolbar = NavigationToolbar(self.canvas, self)
-        # self.ax = self.fig.add_subplot(111)
-        # self.ax.grid()
-        # self.ax.xaxis.set_major_locator(MaxNLocator(integer=True))
-        # self.ax.yaxis.set_major_locator(MaxNLocator(integer=True))
-        # self.ax.set_xlabel('t(s)')
-        # self.ax.set_ylabel('N')
-        # self.ax.set_title("Live Graph")
-        self.customFig = CustomFigCanvas()
+        self.customFig = CustomFigGraph()
 
         # setup the grid layout design and components
         self.vbox_graph = QVBoxLayout()
-        # self.vbox_graph.addWidget(self.customFig.toolbar)
         self.vbox_graph.addWidget(self.customFig)
 
-    def plotGraph(self, data):
-        # plot the graph and set the labels
-        status = processData(data)
-        self.time += 1
 
-        features = []
-        self.angry.append(status["angry"])
-        self.disgust.append(status["disgust"])
-        self.fear.append(status["fear"])
-        self.happy.append(status["happy"])
-        self.sad.append(status["sad"])
-        self.surprise.append(status["surprise"])
-        self.neutral.append(status["neutral"])
-        self.focus.append(status["focus"])
-
-        features.append(self.angry)
-        features.append(self.disgust)
-        features.append(self.fear)
-        features.append(self.happy)
-        features.append(self.sad)
-        features.append(self.surprise)
-        features.append(self.neutral)
-        features.append(self.focus)
-
-        t = np.linspace(1, self.time, num=self.time)
-
-        for i in range(len(self.features)):
-            y = np.array(features[i])
-            self.ax.plot(t, y, label=self.features[i][0], color=self.features[i][1])
-            self.ax.legend(bbox_to_anchor=(0.9, 1.1), loc='upper left', borderaxespad=0.)
-
-
-class CustomFigCanvas(FigureCanvas, TimedAnimation):
+class CustomFigGraph(FigureCanvas, TimedAnimation):
     def __init__(self):
         self.features = [('angry', '#1f77b4'),
                          ('disgust', '#ff7f0e'),
@@ -198,48 +135,43 @@ class CustomFigCanvas(FigureCanvas, TimedAnimation):
                          ('surprise', '#8c564b'),
                          ('neutral', '#e377c2'),
                          ('focus', '#7f7f7f')]
-        self.angry = []
-        self.disgust = []
-        self.fear = []
-        self.happy = []
-        self.sad = []
-        self.surprise = []
-        self.neutral = []
-        self.focus = []
+
+        self.current_features = [np.array([]), np.array([]), np.array([]), np.array([]),
+                                 np.array([]), np.array([]), np.array([]), np.array([])]
         self.time = 0
 
-        self.fig = Figure(figsize=(9, 7), dpi=65, facecolor=(1, 1, 1), edgecolor=(0, 0, 0))
+        self.fig = Figure(figsize=(11, 9), dpi=100, facecolor=(1, 1, 1), edgecolor=(0, 0, 0))
         self.ax = self.fig.add_subplot(111)
-        self.ax.grid()
-        self.ax.xaxis.set_major_locator(MaxNLocator(integer=True))
-        self.ax.yaxis.set_major_locator(MaxNLocator(integer=True))
         self.ax.set_xlabel('t(s)')
         self.ax.set_ylabel('N')
         self.ax.set_title("Live Graph")
+        self.ax.grid()
+        self.ax.xaxis.set_major_locator(MaxNLocator(integer=True))
+        self.ax.yaxis.set_major_locator(MaxNLocator(integer=True))
+        self.ax.set_xlim(0, 1)
+        self.ax.set_ylim(0, 1)
 
-        self.line1 = Line2D([], [], color=self.features[0][1], linewidth=2)
-        self.line2 = Line2D([], [], color=self.features[1][1], linewidth=2)
-        self.line3 = Line2D([], [], color=self.features[2][1], linewidth=2)
-        self.line4 = Line2D([], [], color=self.features[3][1], linewidth=2)
-        self.line5 = Line2D([], [], color=self.features[4][1], linewidth=2)
-        self.line6 = Line2D([], [], color=self.features[5][1], linewidth=2)
-        self.line7 = Line2D([], [], color=self.features[6][1], linewidth=2)
-        self.line8 = Line2D([], [], color=self.features[7][1], linewidth=2)
+        self.line1 = Line2D([], [], color=self.features[0][1])
+        self.line2 = Line2D([], [], color=self.features[1][1])
+        self.line3 = Line2D([], [], color=self.features[2][1])
+        self.line4 = Line2D([], [], color=self.features[3][1])
+        self.line5 = Line2D([], [], color=self.features[4][1])
+        self.line6 = Line2D([], [], color=self.features[5][1])
+        self.line7 = Line2D([], [], color=self.features[6][1])
+        self.line8 = Line2D([], [], color=self.features[7][1])
 
-        self.ax.add_line(self.line1)
-        self.ax.add_line(self.line2)
-        self.ax.add_line(self.line3)
-        self.ax.add_line(self.line4)
-        self.ax.add_line(self.line5)
-        self.ax.add_line(self.line6)
-        self.ax.add_line(self.line7)
-        self.ax.add_line(self.line8)
+        lines = [self.line1, self.line2, self.line3, self.line4,
+                 self.line5, self.line6, self.line7, self.line8]
+
+        for line in lines:
+            self.ax.add_line(line)
 
         FigureCanvas.__init__(self, self.fig)
-        TimedAnimation.__init__(self, self.fig, interval=50, blit=True)
+        TimedAnimation.__init__(self, self.fig, interval=1000, blit=False)
 
     def new_frame_seq(self):
-        return iter(range(self.time))
+        it = iter(range(self.time))
+        return it
 
     def _init_draw(self):
         lines = [self.line1, self.line2, self.line3, self.line4,
@@ -252,14 +184,8 @@ class CustomFigCanvas(FigureCanvas, TimedAnimation):
         status = processData(data)
         self.time += 1
 
-        self.angry.append(status["angry"])
-        self.disgust.append(status["disgust"])
-        self.fear.append(status["fear"])
-        self.happy.append(status["happy"])
-        self.sad.append(status["sad"])
-        self.surprise.append(status["surprise"])
-        self.neutral.append(status["neutral"])
-        self.focus.append(status["focus"])
+        for i in range(len(self.current_features)):
+            self.current_features[i] = np.append(self.current_features[i], status[self.features[i][0]])
 
     def _step(self, *args):
         # extends the _step() method for the TimedAnimation class
@@ -269,15 +195,19 @@ class CustomFigCanvas(FigureCanvas, TimedAnimation):
             TimedAnimation._stop(self)
 
     def _draw_frame(self, framedata):
-        t = np.linspace(1, self.time, num=self.time)
-        self.line1.set_data(t, self.angry)
-        self.line2.set_data(t, self.disgust)
-        self.line3.set_data(t, self.fear)
-        self.line4.set_data(t, self.happy)
-        self.line5.set_data(t, self.sad)
-        self.line6.set_data(t, self.surprise)
-        self.line7.set_data(t, self.neutral)
-        self.line8.set_data(t, self.focus)
+        arrays = [arr for arr in self.current_features]
+        ylim_max = np.maximum.reduce(arrays).max() + 25
+        ylim_min = np.minimum.reduce(arrays).min() - 25
+        self.ax.set_xlim(0, self.time)
+        self.ax.set_ylim(ylim_min, ylim_max)
+
+        t = np.linspace(0, self.time - 1, num=self.time)
+
+        lines = [self.line1, self.line2, self.line3, self.line4,
+                 self.line5, self.line6, self.line7, self.line8]
+        for i in range(len(self.current_features)):
+            lines[i].set_data(t, self.current_features[i])
+
         self._drawn_artists = [self.line1, self.line2, self.line3, self.line4,
                                self.line5, self.line6, self.line7, self.line8]
 
@@ -285,8 +215,7 @@ class Communicate(QObject):
     data_signal = pyqtSignal(list)
 
 
-def generateRandData():
-    n = 1000
+def generateRandData(n):
     data = []
     for i in range(n):
         status = {"angry": round(np.random.rand()),
@@ -305,10 +234,10 @@ def dataSend(addData_callbackFunc):
     # setup the signal-slot mechanism.
     signal = Communicate()
     signal.data_signal.connect(addData_callbackFunc)
-
-    for i in range(1000):
-        data = generateRandData()
-        time.sleep(0.1)
+    n = 1000
+    for i in range(n):
+        data = generateRandData(n)
+        time.sleep(1)
         signal.data_signal.emit(data)
 
 
@@ -316,7 +245,4 @@ def dataSend(addData_callbackFunc):
 app = QApplication(sys.argv)
 window = Live_Graph()
 window.show()
-
-
-app.exec_()
-sys.exit(0)
+sys.exit(app.exec_())
