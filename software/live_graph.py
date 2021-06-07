@@ -22,10 +22,19 @@ import threading
 
 matplotlib.use("Qt5Agg")
 
+class Thread(QObject):
+    thread_signal = pyqtSignal(list)
+
+class Status(QObject):
+    status_signal = pyqtSignal(list)
+
+
 class Live_Graph(QWidget):
     def __init__(self):
         # call the constructor of the parent (QWidget)
         super(Live_Graph, self).__init__()
+
+        self.read_status = Status()
 
         # set title  and geometry for the window
         self.setWindowTitle("Live Statistics")
@@ -54,6 +63,16 @@ class Live_Graph(QWidget):
         self.hbox.addLayout(self.vbox_graph)
         self.hbox.addWidget(self.groupBox)
         self.setLayout(self.hbox)
+
+        self.angry_cb.stateChanged.connect(self.get_status)
+        self.disgust_cb.stateChanged.connect(self.get_status)
+        self.fear_cb.stateChanged.connect(self.get_status)
+        self.happy_cb.stateChanged.connect(self.get_status)
+        self.sad_cb.stateChanged.connect(self.get_status)
+        self.surprise_cb.stateChanged.connect(self.get_status)
+        self.neutral_cb.stateChanged.connect(self.get_status)
+        self.focus_cb.stateChanged.connect(self.get_status)
+        self.read_status.status_signal.connect(self.customFig.read_status)
 
         dataLoop = threading.Thread(name='dataLoop', target=dataSend, daemon=True,
                                     args=(self.addData_callbackFunc,))
@@ -126,6 +145,12 @@ class Live_Graph(QWidget):
         self.vbox_graph.addWidget(self.toolbar)
         self.vbox_graph.addWidget(self.customFig)
 
+    def get_status(self):
+        status = [self.angry_cb.isChecked(), self.disgust_cb.isChecked(), self.fear_cb.isChecked(),
+                  self.happy_cb.isChecked(), self.sad_cb.isChecked(), self.surprise_cb.isChecked(),
+                  self.neutral_cb.isChecked(), self.focus_cb.isChecked()]
+
+        self.read_status.status_signal.emit(status)
 
 class CustomFigGraph(FigureCanvas, TimedAnimation):
     def __init__(self):
@@ -137,6 +162,7 @@ class CustomFigGraph(FigureCanvas, TimedAnimation):
                          ('surprise', '#8c564b'),
                          ('neutral', '#e377c2'),
                          ('focus', '#7f7f7f')]
+        self.status = []
         self.lines = []
 
         self.current_features = [np.array([]), np.array([]), np.array([]), np.array([]),
@@ -165,6 +191,9 @@ class CustomFigGraph(FigureCanvas, TimedAnimation):
 
         FigureCanvas.__init__(self, self.fig)
         TimedAnimation.__init__(self, self.fig, interval=1000, blit=False)
+
+    def read_status(self, status):
+        self.status = status
 
     def new_frame_seq(self):
         it = iter(range(self.time))
@@ -202,10 +231,6 @@ class CustomFigGraph(FigureCanvas, TimedAnimation):
 
         self._drawn_artists = self.lines
 
-class Communicate(QObject):
-    data_signal = pyqtSignal(list)
-
-
 def generateRandData(n):
     data = []
     for i in range(n):
@@ -223,13 +248,13 @@ def generateRandData(n):
 
 def dataSend(addData_callbackFunc):
     # setup the signal-slot mechanism.
-    signal = Communicate()
-    signal.data_signal.connect(addData_callbackFunc)
+    signal = Thread()
+    signal.thread_signal.connect(addData_callbackFunc)
     n = 1000
     for i in range(n):
         data = generateRandData(n)
         time.sleep(1)
-        signal.data_signal.emit(data)
+        signal.thread_signal.emit(data)
 
 
 # run the application and show the window
