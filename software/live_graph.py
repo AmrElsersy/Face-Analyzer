@@ -119,9 +119,11 @@ class Live_Graph(QWidget):
 
     def createPlotLayout(self):
         self.customFig = CustomFigGraph()
+        self.toolbar = NavigationToolbar(self.customFig, self)
 
         # setup the grid layout design and components
         self.vbox_graph = QVBoxLayout()
+        self.vbox_graph.addWidget(self.toolbar)
         self.vbox_graph.addWidget(self.customFig)
 
 
