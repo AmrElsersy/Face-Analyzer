@@ -162,7 +162,8 @@ class CustomFigGraph(FigureCanvas, TimedAnimation):
                          ('surprise', '#8c564b'),
                          ('neutral', '#e377c2'),
                          ('focus', '#7f7f7f')]
-        self.status = []
+        self.status = [True, True, True, True,
+                       True, True, True, True]
         self.lines = []
 
         self.current_features = [np.array([]), np.array([]), np.array([]), np.array([]),
@@ -174,7 +175,7 @@ class CustomFigGraph(FigureCanvas, TimedAnimation):
         self.ax.set_xlabel('t(s)')
         self.ax.set_ylabel('N')
         self.ax.set_title("Live Graph")
-        self.ax.grid()
+        self.ax.grid(linestyle='--', linewidth=0.5)
         self.ax.xaxis.set_major_locator(MaxNLocator(integer=True))
         self.ax.yaxis.set_major_locator(MaxNLocator(integer=True))
         self.ax.set_xlim(0, 1)
@@ -218,7 +219,7 @@ class CustomFigGraph(FigureCanvas, TimedAnimation):
             TimedAnimation._stop(self)
 
     def _draw_frame(self, framedata):
-        arrays = [arr for arr in self.current_features]
+        arrays = [arr for i, arr in enumerate(self.current_features) if self.status[i]]
         ylim_max = np.maximum.reduce(arrays).max() + 25
         ylim_min = np.minimum.reduce(arrays).min() - 25
         self.ax.set_xlim(0, self.time)
@@ -228,6 +229,10 @@ class CustomFigGraph(FigureCanvas, TimedAnimation):
 
         for i in range(len(self.current_features)):
             self.lines[i].set_data(t, self.current_features[i])
+            if not self.status[i]:
+                self.lines[i].set_visible(False)
+            else:
+                self.lines[i].set_visible(True)
 
         self._drawn_artists = self.lines
 
