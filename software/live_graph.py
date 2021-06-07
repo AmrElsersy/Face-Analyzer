@@ -135,6 +135,7 @@ class CustomFigGraph(FigureCanvas, TimedAnimation):
                          ('surprise', '#8c564b'),
                          ('neutral', '#e377c2'),
                          ('focus', '#7f7f7f')]
+        self.lines = []
 
         self.current_features = [np.array([]), np.array([]), np.array([]), np.array([]),
                                  np.array([]), np.array([]), np.array([]), np.array([])]
@@ -151,20 +152,14 @@ class CustomFigGraph(FigureCanvas, TimedAnimation):
         self.ax.set_xlim(0, 1)
         self.ax.set_ylim(0, 1)
 
-        self.line1 = Line2D([], [], color=self.features[0][1])
-        self.line2 = Line2D([], [], color=self.features[1][1])
-        self.line3 = Line2D([], [], color=self.features[2][1])
-        self.line4 = Line2D([], [], color=self.features[3][1])
-        self.line5 = Line2D([], [], color=self.features[4][1])
-        self.line6 = Line2D([], [], color=self.features[5][1])
-        self.line7 = Line2D([], [], color=self.features[6][1])
-        self.line8 = Line2D([], [], color=self.features[7][1])
+        for i in range(len(self.current_features)):
+            self.lines.append(Line2D([], [], color=self.features[i][1]))
 
-        lines = [self.line1, self.line2, self.line3, self.line4,
-                 self.line5, self.line6, self.line7, self.line8]
-
-        for line in lines:
+        for line in self.lines:
             self.ax.add_line(line)
+
+        features = [feature[0] for feature in self.features]
+        self.ax.legend(self.lines, features, bbox_to_anchor=(0.915, 1.15), loc='upper left', borderaxespad=0.)
 
         FigureCanvas.__init__(self, self.fig)
         TimedAnimation.__init__(self, self.fig, interval=1000, blit=False)
@@ -174,10 +169,7 @@ class CustomFigGraph(FigureCanvas, TimedAnimation):
         return it
 
     def _init_draw(self):
-        lines = [self.line1, self.line2, self.line3, self.line4,
-                 self.line5, self.line6, self.line7, self.line8]
-
-        for line in lines:
+        for line in self.lines:
             line.set_data([], [])
 
     def addData(self, data):
@@ -203,13 +195,10 @@ class CustomFigGraph(FigureCanvas, TimedAnimation):
 
         t = np.linspace(0, self.time - 1, num=self.time)
 
-        lines = [self.line1, self.line2, self.line3, self.line4,
-                 self.line5, self.line6, self.line7, self.line8]
         for i in range(len(self.current_features)):
-            lines[i].set_data(t, self.current_features[i])
+            self.lines[i].set_data(t, self.current_features[i])
 
-        self._drawn_artists = [self.line1, self.line2, self.line3, self.line4,
-                               self.line5, self.line6, self.line7, self.line8]
+        self._drawn_artists = self.lines
 
 class Communicate(QObject):
     data_signal = pyqtSignal(list)
