@@ -1,7 +1,6 @@
 from PyQt5.QtWidgets import QApplication, QWidget, QTabWidget, QVBoxLayout
 from PyQt5.QtGui import QIcon, QPalette, QColor
 from PyQt5 import QtGui
-# from PyQt5.QtChart import QChart, QChartView, QPieSeries
 from live_graph import Live_Graph
 from pie_chart import GazeTrackingChart
 import sys
@@ -18,7 +17,7 @@ class Live_Statistics(QWidget):
 
         # give orange background to the window
         palette = self.palette()
-        palette.setColor(QPalette.Window,QColor(0, 128, 128))
+        palette.setColor(QPalette.Window, QColor(0, 128, 128))
         self.setPalette(palette)
         self.setAutoFillBackground(True)
 
@@ -47,7 +46,7 @@ class Live_Statistics(QWidget):
 
     # set icon for the application
     def setIcon(self):
-        appIcon = QIcon("icon.png")
+        appIcon = QIcon("stat.png")
         self.setWindowIcon(appIcon)
 
     # to center the application window at the beginning
@@ -58,19 +57,11 @@ class Live_Statistics(QWidget):
         self.move(qRect.topLeft())
 
 
- 
-
 def main():
     app = QApplication(sys.argv)
     main = Live_Statistics()
-    # main = MainWidget()
     main.show()
     sys.exit(app.exec_())
-    
-    
-    
 
 if __name__ == "__main__":
     main()
-        
-

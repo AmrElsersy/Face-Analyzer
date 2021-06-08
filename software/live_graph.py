@@ -1,7 +1,6 @@
 # import required library for GUI
 from PyQt5.QtWidgets import QApplication, QWidget, QVBoxLayout, QHBoxLayout, QGroupBox, QCheckBox
-from PyQt5.QtGui import QIcon, QPalette, QColor, QFont
-from PyQt5 import QtGui
+from PyQt5.QtGui import QPalette, QColor, QFont
 
 # import matplotlib backend and figure
 from matplotlib.backends.backend_qt5agg import FigureCanvasQTAgg as FigureCanvas
@@ -27,25 +26,11 @@ class Live_Graph(QWidget):
 
         self.read_status = Status()
 
-        # # set title  and geometry for the window
-        # self.setWindowTitle("Live Statistics")
-        # self.setGeometry(500, 400, 800, 600)
-        #
         # # give orange background to the window
         # palette = self.palette()
         # palette.setColor(QPalette.Window,QColor(0, 128, 128))
         # self.setPalette(palette)
         # self.setAutoFillBackground(True)
-        #
-        # # set minimum width and height for the window
-        # self.setMinimumHeight(600)
-        # self.setMinimumWidth(800)
-        # self.setMaximumHeight(600)
-        # self.setMaximumWidth(800)
-        #
-        # # set icon for the application at run time and center the application window with the primary screen
-        # self.setIcon()
-        # self.center()
 
         # setup the grid layout design and components
         self.createPlotLayout()
@@ -71,18 +56,6 @@ class Live_Graph(QWidget):
 
     def addData_callbackFunc(self, data):
         self.customFig.addData(data)
-
-    # # set icon for the application
-    # def setIcon(self):
-    #     appIcon = QIcon("graph.png")
-    #     self.setWindowIcon(appIcon)
-    #
-    # # to center the application window at the beginning
-    # def center(self):
-    #     qRect = self.frameGeometry()
-    #     centerPoint = QtGui.QGuiApplication.primaryScreen().availableGeometry().center()
-    #     qRect.moveCenter(centerPoint)
-    #     self.move(qRect.topLeft())
 
     def createCheckboxes(self):
         # make group box with headline then add the gridlayout to it

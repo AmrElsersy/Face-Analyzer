@@ -1,4 +1,3 @@
-
 import sys
 from PyQt5 import QtCore, QtGui, QtWidgets
 from PyQt5.QtCore import Qt
@@ -21,9 +20,9 @@ class GazeTrackingChart(QWidget):
         }
 
         # window requirements
-        self.setGeometry(200,200,600,400)
-        self.setWindowTitle("Gaze-Tracking")
-        self.setWindowIcon(QIcon("chart.png"))
+        # self.setGeometry(200,200,600,400)
+        # self.setWindowTitle("Gaze-Tracking")
+        # self.setWindowIcon(QIcon("chart.png"))
 
         # change the color of the window
         self.setStyleSheet('background-color:white')
