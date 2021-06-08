@@ -1,6 +1,6 @@
 # import required library for GUI
-from PyQt5.QtWidgets import QApplication, QWidget, QVBoxLayout, QHBoxLayout, QGroupBox, QCheckBox
-from PyQt5.QtGui import QPalette, QColor, QFont
+from PyQt5.QtWidgets import QWidget, QVBoxLayout, QHBoxLayout, QGroupBox, QCheckBox
+from PyQt5.QtGui import QFont, QPalette, QColor
 
 # import matplotlib backend and figure
 from matplotlib.backends.backend_qt5agg import FigureCanvasQTAgg as FigureCanvas
@@ -15,7 +15,6 @@ from utils import processData, dataSend, Status
 import matplotlib
 import numpy as np
 import threading
-import sys
 
 matplotlib.use("Qt5Agg")
 
@@ -126,12 +125,10 @@ class CustomFigGraph(FigureCanvas, TimedAnimation):
                          ('surprise', '#8c564b'),
                          ('neutral', '#e377c2'),
                          ('focus', '#7f7f7f')]
-        self.status = [True, True, True, True,
-                       True, True, True, True]
+        self.status = [True] * 8
         self.lines = []
 
-        self.current_features = [np.array([]), np.array([]), np.array([]), np.array([]),
-                                 np.array([]), np.array([]), np.array([]), np.array([])]
+        self.current_features = [np.array([])] * 8
         self.time = 0
 
         self.fig = Figure(figsize=(11, 9), dpi=100, facecolor=(1, 1, 1), edgecolor=(0, 0, 0))
@@ -204,10 +201,3 @@ class CustomFigGraph(FigureCanvas, TimedAnimation):
         self.ax.legend(lines, features, bbox_to_anchor=(0.915, 1.15), loc='upper left', borderaxespad=0.)
 
         self._drawn_artists = self.lines
-
-
-# run the application and show the window
-# app = QApplication(sys.argv)
-# window = Live_Graph()
-# window.show()
-# sys.exit(app.exec_())

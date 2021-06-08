@@ -1,13 +1,5 @@
-import sys
-from PyQt5 import QtCore, QtGui, QtWidgets
-from PyQt5.QtCore import Qt
-
 from PyQt5.QtWidgets import QApplication, QWidget, QVBoxLayout, QHBoxLayout
-from PyQt5.QtGui import QIcon
 from PyQt5.QtChart import QChart, QChartView, QPieSeries
-from PyQt5.QtGui import QIcon, QPen
-
-
 
 class GazeTrackingChart(QWidget):
     def __init__(self):
@@ -19,20 +11,13 @@ class GazeTrackingChart(QWidget):
                 3: "focus"
         }
 
-        # window requirements
-        # self.setGeometry(200,200,600,400)
-        # self.setWindowTitle("Gaze-Tracking")
-        # self.setWindowIcon(QIcon("chart.png"))
-
         # change the color of the window
         self.setStyleSheet('background-color:white')
-
 
         self.chart = QChart()
         self.chart.setAnimationOptions(QChart.NoAnimation)
         self.chart.setTitle("Gaze-Tracking Pie Chart")
         self.chart.setTheme(QChart.ChartThemeBrownSand)
-        
 
         chartview = QChartView(self.chart)
 
@@ -40,7 +25,6 @@ class GazeTrackingChart(QWidget):
         vbox.addWidget(chartview)
 
         self.setLayout(vbox)
-
 
     # def __plot_widget(self, new_data=None):
     #     #create pieseries

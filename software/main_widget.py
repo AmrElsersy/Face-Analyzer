@@ -2,6 +2,7 @@ from PyQt5.QtWidgets import QApplication, QWidget, QTabWidget, QVBoxLayout
 from PyQt5.QtGui import QIcon, QPalette, QColor
 from PyQt5 import QtGui
 from live_graph import Live_Graph
+from live_hist import Live_Histogram
 from pie_chart import GazeTrackingChart
 import sys
 
@@ -36,10 +37,11 @@ class Live_Statistics(QWidget):
     def createTabs(self):
         self.layout = QVBoxLayout()
         self.live_graph = Live_Graph()
+        self.live_hist = Live_Histogram()
         self.gaze_chart = GazeTrackingChart()
         self.tabs = QTabWidget()
         self.tabs.addTab(self.live_graph, QIcon("graph.png"), "Live Graph")
-        self.tabs.addTab(QWidget(), QIcon("hist.png"), "Live Histogram")
+        self.tabs.addTab(self.live_hist, QIcon("hist.png"), "Live Histogram")
         self.tabs.addTab(self.gaze_chart, QIcon("pie.png"), "Live Gaze-Tracking")
         self.layout.addWidget(self.tabs)
         self.setLayout(self.layout)
