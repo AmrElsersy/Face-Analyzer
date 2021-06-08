@@ -10,16 +10,15 @@ from matplotlib.lines import Line2D
 from matplotlib.animation import TimedAnimation
 from matplotlib.ticker import MaxNLocator
 
-from utils import processData, dataSend, Status
+from utils import processData, Status
 
 import matplotlib
 import numpy as np
-import threading
 
 matplotlib.use("Qt5Agg")
 
 class Live_Graph(QWidget):
-    def __init__(self):
+    def __init__(self, interval):
         # call the constructor of the parent (QWidget)
         super(Live_Graph, self).__init__()
 
@@ -32,7 +31,7 @@ class Live_Graph(QWidget):
         # self.setAutoFillBackground(True)
 
         # setup the grid layout design and components
-        self.createPlotLayout()
+        self.createPlotLayout(interval)
         self.createCheckboxes()
         self.hbox = QHBoxLayout()
         self.hbox.addLayout(self.vbox_graph)
@@ -48,13 +47,6 @@ class Live_Graph(QWidget):
         self.neutral_cb.stateChanged.connect(self.get_status)
         self.focus_cb.stateChanged.connect(self.get_status)
         self.read_status.status_signal.connect(self.customFig.read_status)
-
-        dataLoop = threading.Thread(name='dataLoop', target=dataSend, daemon=True,
-                                    args=(self.addData_callbackFunc,))
-        dataLoop.start()
-
-    def addData_callbackFunc(self, data):
-        self.customFig.addData(data)
 
     def createCheckboxes(self):
         # make group box with headline then add the gridlayout to it
@@ -99,8 +91,8 @@ class Live_Graph(QWidget):
 
         self.groupBox.setLayout(self.vbox_checkboxes)
 
-    def createPlotLayout(self):
-        self.customFig = CustomFigGraph()
+    def createPlotLayout(self, interval):
+        self.customFig = CustomFigGraph(interval)
         self.toolbar = NavigationToolbar(self.customFig, self)
 
         # setup the grid layout design and components
@@ -116,7 +108,7 @@ class Live_Graph(QWidget):
         self.read_status.status_signal.emit(status)
 
 class CustomFigGraph(FigureCanvas, TimedAnimation):
-    def __init__(self):
+    def __init__(self, interval):
         self.features = [('angry', '#1f77b4'),
                          ('disgust', '#ff7f0e'),
                          ('fear', '#2ca02c'),
@@ -152,7 +144,7 @@ class CustomFigGraph(FigureCanvas, TimedAnimation):
         self.ax.legend(self.lines, features, bbox_to_anchor=(0.915, 1.15), loc='upper left', borderaxespad=0.)
 
         FigureCanvas.__init__(self, self.fig)
-        TimedAnimation.__init__(self, self.fig, interval=1000, blit=False)
+        TimedAnimation.__init__(self, self.fig, interval=interval, blit=False)
 
     def read_status(self, status):
         self.status = status

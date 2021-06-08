@@ -8,16 +8,15 @@ from matplotlib.figure import Figure
 from matplotlib.animation import TimedAnimation
 from matplotlib.ticker import MaxNLocator
 
-from utils import processData, dataSend
+from utils import processData
 
 import matplotlib
 import numpy as np
-import threading
 
 matplotlib.use("Qt5Agg")
 
 class Live_Histogram(QWidget):
-    def __init__(self):
+    def __init__(self, interval):
         # call the constructor of the parent (QWidget)
         super(Live_Histogram, self).__init__()
 
@@ -28,21 +27,14 @@ class Live_Histogram(QWidget):
         # self.setAutoFillBackground(True)
 
         # setup the grid layout design and components
-        self.customFig = CustomFigHist()
+        self.customFig = CustomFigHist(interval)
         self.vbox = QVBoxLayout()
         self.vbox.addWidget(self.customFig)
         self.setLayout(self.vbox)
 
-        dataLoop = threading.Thread(name='dataLoop', target=dataSend, daemon=True,
-                                    args=(self.addData_callbackFunc,))
-        dataLoop.start()
-
-    def addData_callbackFunc(self, data):
-        self.customFig.addData(data)
-
 
 class CustomFigHist(FigureCanvas, TimedAnimation):
-    def __init__(self):
+    def __init__(self, interval):
         self.features = ['angry', 'disgust', 'fear', 'happy',
                          'sad', 'surprise', 'neutral', 'focus']
 
@@ -60,7 +52,7 @@ class CustomFigHist(FigureCanvas, TimedAnimation):
         self.ax.set_ylim(0, 1)
 
         FigureCanvas.__init__(self, self.fig)
-        TimedAnimation.__init__(self, self.fig, interval=1000, blit=False, repeat=True)
+        TimedAnimation.__init__(self, self.fig, interval=interval, blit=False, repeat=True)
 
     def new_frame_seq(self):
         it = iter(range(self.steps))

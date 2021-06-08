@@ -6,11 +6,16 @@ from live_hist import Live_Histogram
 from pie_chart import GazeTrackingChart
 import sys
 
+from utils import dataSend
+import threading
+
 
 class Live_Statistics(QWidget):
     def __init__(self):
         # call the constructor of the parent (QWidget)
         super(Live_Statistics, self).__init__()
+
+        self.interval = 200
 
         # set title  and geometry for the window
         self.setWindowTitle("Live Statistics")
@@ -34,10 +39,19 @@ class Live_Statistics(QWidget):
 
         self.createTabs()
 
+        dataLoop = threading.Thread(name='dataLoop', target=dataSend, daemon=True,
+                                    args=(self.addData_callbackFunc, self.interval))
+        dataLoop.start()
+
+    def addData_callbackFunc(self, data):
+        self.live_graph.customFig.addData(data)
+        self.live_hist.customFig.addData(data)
+        self.gaze_chart.addData(data)
+
     def createTabs(self):
         self.layout = QVBoxLayout()
-        self.live_graph = Live_Graph()
-        self.live_hist = Live_Histogram()
+        self.live_graph = Live_Graph(self.interval)
+        self.live_hist = Live_Histogram(self.interval)
         self.gaze_chart = GazeTrackingChart()
         self.tabs = QTabWidget()
         self.tabs.addTab(self.live_graph, QIcon("graph.png"), "Live Graph")

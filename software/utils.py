@@ -30,14 +30,28 @@ def processData(data):
 
     return status
 
-def dataSend(addData_callbackFunc):
+def processGazeTracking(data):
+    status = {"right": 0,
+              "left": 0,
+              "blink": 0,
+              "focus": 0}
+
+    for el in data:
+        status["right"] += el["right"]
+        status["left"] += el["left"]
+        status["blink"] += el["blink"]
+        status["focus"] += el["focus"]
+
+    return status
+
+def dataSend(addData_callbackFunc, interval):
     # setup the signal-slot mechanism.
     signal = Thread()
     signal.thread_signal.connect(addData_callbackFunc)
     n = 1000
     for i in range(n):
         data = generateRandData(n)
-        time.sleep(1)
+        time.sleep(interval/1000)
         signal.thread_signal.emit(data)
     pass
 
@@ -51,7 +65,10 @@ def generateRandData(n):
                   "sad": round(np.random.rand()),
                   "surprise": round(np.random.rand()),
                   "neutral": round(np.random.rand()),
-                  "focus": round(np.random.rand())}
+                  "focus": round(np.random.rand()),
+                  "right": round(np.random.rand()),
+                  "left": round(np.random.rand()),
+                  "blink": round(np.random.rand())}
         data.append(status)
 
     return data
