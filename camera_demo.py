@@ -17,6 +17,15 @@ def get_emotion(face):
     return 'ray2'
     # return recognize_face(face)
 
+def hisEqulColor(img):
+    ycrcb=cv2.cvtColor(img,cv2.COLOR_BGR2YCR_CB)
+    channels=cv2.split(ycrcb)
+    cv2.equalizeHist(channels[0],channels[0])
+    cv2.merge(channels,ycrcb)
+    cv2.cvtColor(ycrcb,cv2.COLOR_YCR_CB2BGR,img)
+    return img
+
+
 def main(args):
     face_alignment = FaceAlignment()
     focus_detector = focusDetector()
@@ -28,6 +37,8 @@ def main(args):
         face_detector = HaarCascadeDetector(root)
     else:
         face_detector = DnnDetector(root)
+
+    eye_cascade=cv2.CascadeClassifier('haarcascade_eye.xml')
 
     faces_info = []
 
@@ -75,8 +86,20 @@ def main(args):
                 # preprocessing
                 input_face = face_alignment.frontalize_face(face, frame)
 
-                print(input_face.shape)
-                # input_face = cv2.cvtColor(input_face, cv2.COLOR_BGR2GRAY)
+                # Eyes
+                gray = cv2.cvtColor(input_face,cv2.COLOR_BGR2GRAY)
+                # input_face = hisEqulColor(input_face)
+
+                eyes = eye_cascade.detectMultiScale(gray)
+                for (ex,ey,ew,eh) in eyes:
+                    cv2.rectangle(input_face,(ex,ey),(ex+ew,ey+eh),(0,255,0),2)
+
+                    eye = gray[ey:ey+eh, ex:ex+w]
+
+
+                    input_face[ ey:ey+eh, ex:ex+w,0] = eye
+                    input_face[ ey:ey+eh, ex:ex+w,1] = eye
+                    input_face[ ey:ey+eh, ex:ex+w,2] = eye
 
                 emotion_label = get_emotion(input_face)
                 # emotion_prob, emotion_label = get_emotion(input_face)
