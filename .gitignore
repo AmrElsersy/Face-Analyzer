@@ -5,6 +5,7 @@ __pycache__/
 *$py.class
 *.tar
 *.csv
+*.dat
 *.gz
 *.pth
 CK+48/
