@@ -7,7 +7,7 @@ from face_detector.face_detector import DnnDetector, HaarCascadeDetector
 from utils import normalization, histogram_equalization, standerlization
 from face_alignment.face_alignment import FaceAlignment
 # from emotion_recognizer.emotion_recognition import recognize_face
-from GazeTracking.focusDetection import focusDetector
+from gaze_tracking.focusDetection import focusDetector
 
 sys.path.insert(1, 'face_detector')
 sys.path.insert(2, 'GazeTracking')

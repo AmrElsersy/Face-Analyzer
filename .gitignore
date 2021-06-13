@@ -5,12 +5,12 @@ __pycache__/
 *$py.class
 *.tar
 *.csv
+*.dat
 *.gz
 *.pth
 CK+48/
 *.0
 tensorboard/
-shape_predictor_68_face_landmarks.dat
 # C extensions
 *.so
 .vscode/
