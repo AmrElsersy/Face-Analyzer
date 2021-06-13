@@ -91,7 +91,8 @@ def main(args):
                 info = {
                     'name': args.name,
                     'emotion': emotion_label,
-                    'focus': focus
+                    'focus': focus,
+                    'time' : str(int(time.time()/20))
                 }
 
                 # send to the server
