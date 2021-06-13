@@ -86,24 +86,9 @@ def main(args):
                 # preprocessing
                 input_face = face_alignment.frontalize_face(face, frame)
 
-                # Eyes
-                gray = cv2.cvtColor(input_face,cv2.COLOR_BGR2GRAY)
-                # input_face = hisEqulColor(input_face)
-
-                eyes = eye_cascade.detectMultiScale(gray)
-                for (ex,ey,ew,eh) in eyes:
-                    cv2.rectangle(input_face,(ex,ey),(ex+ew,ey+eh),(0,255,0),2)
-
-                    eye = gray[ey:ey+eh, ex:ex+w]
-
-
-                    input_face[ ey:ey+eh, ex:ex+w,0] = eye
-                    input_face[ ey:ey+eh, ex:ex+w,1] = eye
-                    input_face[ ey:ey+eh, ex:ex+w,2] = eye
-
                 emotion_label = get_emotion(input_face)
                 # emotion_prob, emotion_label = get_emotion(input_face)
-                focus = ''
+
                 focus = focus_detector.focused(input_face)
 
                 info = {
