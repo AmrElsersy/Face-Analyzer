@@ -5,7 +5,7 @@
 #### install opencv & dnn from source (optional)
 Both opencv dnn & haar cascade are used for face detection, if you want to use haar cascade you can skip this part.
 
-install dependencies 
+install dependencies
 ```
 $ sudo apt-get install libjpeg-dev libpng-dev libtiff-dev
 $ sudo apt-get install libavcodec-dev libavformat-dev libswscale-dev
@@ -30,7 +30,7 @@ sudo apt-get install python3-opencv
 ```
 
 #### Run Camera Demo
-##### Live camera demo 
+##### Live camera demo
 ```python
 $ python3 camera_demo.py
 
@@ -46,3 +46,17 @@ $ python3 camera_demo.py --image --path PATH_TO_IMAGE
 # video
 $ python3 camera_demo.py --path PATH_TO_VIDEO
 ```
+
+
+##### Sockets Test
+```python
+# run the server that stores faces info and send it to the receiver
+python3 server.py
+
+# run the upd client which will receive the data preiodically (the GUI or the meeting organizer)
+python3 udp_receiver.py
+
+# run the camera_demo to send the data of 1 face to the server
+python3 camera_demo.py
+```
+

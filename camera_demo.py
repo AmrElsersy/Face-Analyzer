@@ -8,13 +8,14 @@ from utils import normalization, histogram_equalization, standerlization
 from face_alignment.face_alignment import FaceAlignment
 # from emotion_recognizer.emotion_recognition import recognize_face
 from gaze_tracking.focusDetection import focusDetector
+import requests
 
 sys.path.insert(1, 'face_detector')
 sys.path.insert(2, 'GazeTracking')
 device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 
 def get_emotion(face):
-    return 'ray2'
+    return 'not ray2'
     # return recognize_face(face)
 
 def hisEqulColor(img):
@@ -37,10 +38,6 @@ def main(args):
         face_detector = HaarCascadeDetector(root)
     else:
         face_detector = DnnDetector(root)
-
-    eye_cascade=cv2.CascadeClassifier('haarcascade_eye.xml')
-
-    faces_info = []
 
     video = None
     isOpened = False
@@ -92,11 +89,13 @@ def main(args):
                 focus = focus_detector.focused(input_face)
 
                 info = {
+                    'name': args.name,
                     'emotion': emotion_label,
                     'focus': focus
                 }
 
-                faces_info.append(info)
+                # send to the server
+                requests.post(args.url, json=info)
 
                 cv2.imshow('input face', cv2.resize(input_face, (120, 120)))
                 cv2.rectangle(frame, (x, y), (x + w, y + h), (200, 100, 0), 3)
@@ -127,17 +126,15 @@ def main(args):
                 video.release()
             break
 
-    return faces_info
-
 if __name__ == '__main__':
     parser = argparse.ArgumentParser()
+    parser.add_argument('--url', type=str, default='http://127.0.0.1:8008/faces_info')
+    parser.add_argument('--name', type=str, help='unique name of the user', default='ray2')
     parser.add_argument('--haar', action='store_true', help='run the haar cascade face detector')
     parser.add_argument('--path', type=str, default='', help='path to video to test')
     parser.add_argument('--image', action='store_true', help='specify if you test image or not')
-    parser.add_argument('--fps', type=int, default=30, help='num of frames per second to capture info')
+    parser.add_argument('--fps', type=int, default=2, help='num of frames per second to capture info')
     args = parser.parse_args()
 
-    faces_info = main(args)
-    # print(faces_info)
-    print('Frames taken = ', len(faces_info), ' .. Time between frames = ', round(1/args.fps,3), 'sec')
+    main(args)
 

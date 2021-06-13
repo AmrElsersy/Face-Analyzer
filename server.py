@@ -36,7 +36,6 @@ class FaceInfoTracker:
             self.faces_infos.append(face_info)
 
     def clear(self):
-        print(self.faces_infos)
 
         if self.target_address:
             # send to ogranizer
@@ -45,7 +44,7 @@ class FaceInfoTracker:
             # send to udp receiver
             self.socket.sendto(pickle_msg, self.target_address)
 
-        print("clear")
+        print("clear", self.faces_infos, "\n")
         self.faces_infos.clear()
 
 #  ===================== App - Tracker ========================
@@ -105,7 +104,7 @@ def set_target_address():
 
 if __name__ == '__main__':
 
-    thread = MyThread(4)
+    thread = MyThread(2)
     thread.start()
 
     ip = "127.0.0.1"
