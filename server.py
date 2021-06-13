@@ -1,6 +1,7 @@
 from flask import Flask, request, jsonify
-import time
-from threading import Thread, Timer, Event
+from threading import Thread, Event
+import socket, json
+import pickle
 
 """
 Received Face Info
@@ -15,9 +16,12 @@ class FaceInfoTracker:
     def __init__(self):
         # list of json faces infos
         self.faces_infos = []
-        self.prev_faces_infos = []
+
+        self.socket = socket.socket(socket.AF_INET,socket.SOCK_DGRAM)
+        self.target_address = None
 
     def add_info(self, face_info):
+
         # if the same person sent a face info during the timeout, update its values
         update_old_info = False
         for info in self.faces_infos:
@@ -32,7 +36,16 @@ class FaceInfoTracker:
             self.faces_infos.append(face_info)
 
     def clear(self):
-        self.prev_faces_infos = self.faces_infos
+        print(self.faces_infos)
+
+        if self.target_address:
+            # send to ogranizer
+            # encode with pickle .. converts the list into bytes
+            pickle_msg = pickle.dumps(self.faces_infos)
+            # send to udp receiver
+            self.socket.sendto(pickle_msg, self.target_address)
+
+        print("clear")
         self.faces_infos.clear()
 
 #  ===================== App - Tracker ========================
@@ -48,10 +61,10 @@ class MyThread(Thread):
 
     def run(self):
         while not self.stopped.wait(self.wait_time):
-            print("clear")
             tracker.clear()
 
 # ======================== Routes ========================
+# add face info .. should post json that contains "name" & "emotion" & "focus"
 @app.route("/faces_info",methods=["POST"])
 def add_face_info():
     face_info = request.get_json()
@@ -64,24 +77,35 @@ def add_face_info():
         "success":True
     }), 200
 
+# get all the faces info at this moment
 @app.route("/faces_info", methods=["GET"])
 def get_faces_infos():
 
-    # if the list is empty so it might be because the request time cames after the clear time
-    # so set it to the prev faces info of the prev time
-    if len(tracker.faces_infos) > 0:
-        faces_infos = tracker.faces_infos
-    else:
-        faces_infos = tracker.prev_faces_infos
-
+    faces_infos = tracker.faces_infos
     return jsonify({
         "success" : True,
         "faces_infos" : faces_infos
     }), 200
 
+# Set the target(organizer) ip & port which the server will send the faces_info data periodically
+@app.route("/target_connection", methods=["POST"])
+def set_target_address():
+    address = request.get_json()
+    ip = address['ip']
+    port = address['port']
+
+    tracker.target_address = (ip, port)
+    print("set target ", address)
+
+    return jsonify({
+        "success": True,
+        "target ip": ip,
+        "target port": port
+    }), 200
+
 if __name__ == '__main__':
 
-    thread = MyThread(10)
+    thread = MyThread(4)
     thread.start()
 
     ip = "127.0.0.1"
