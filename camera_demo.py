@@ -1,3 +1,4 @@
+from math import floor
 import sys
 import time
 import argparse
@@ -92,7 +93,7 @@ def main(args):
                     'name': args.name,
                     'emotion': emotion_label,
                     'focus': focus,
-                    'time' : str(int(time.time()/20))
+                    'time' : str(int(time.time()/(max(min_time - 3, 1))))
                 }
 
                 # send to the server
@@ -134,7 +135,7 @@ if __name__ == '__main__':
     parser.add_argument('--haar', action='store_true', help='run the haar cascade face detector')
     parser.add_argument('--path', type=str, default='', help='path to video to test')
     parser.add_argument('--image', action='store_true', help='specify if you test image or not')
-    parser.add_argument('--fps', type=int, default=2, help='num of frames per second to capture info')
+    parser.add_argument('--fps', type=int, default=0.1, help='num of frames per second to capture info')
     args = parser.parse_args()
 
     main(args)
