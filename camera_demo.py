@@ -95,7 +95,7 @@ def main(args):
                         'emotion': emotion_label,
                         'focus': focus,
                     },
-                    'time' : str(int(time.time()/(max(min_time - 1, 1))))
+                    'time' : str(int(time.time()/(max(min_time * 0.9, 1))))
                 }
 
                 # send to the server
