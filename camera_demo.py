@@ -90,9 +90,11 @@ def main(args):
                 focus = focus_detector.focused(input_face)
 
                 info = {
-                    'name': args.name,
-                    'emotion': emotion_label,
-                    'focus': focus,
+                    'data': {
+                        'name': args.name,
+                        'emotion': emotion_label,
+                        'focus': focus,
+                    },
                     'time' : str(int(time.time()/(max(min_time - 3, 1))))
                 }
 

@@ -26,17 +26,17 @@ class FaceInfoTracker:
         # update_old_info = False
         flag = True
         if not face_info['time'] in self.faces_infos:
-            self.faces_infos.setdefault(face_info['time'], []).append(face_info)
+            self.faces_infos.setdefault(face_info['time'], []).append(face_info['data'])
 
         for info in self.faces_infos[face_info['time']]:
-            if info['name'] == face_info['name']:
+            if info['name'] == face_info['data']['name']:
                 # info['emotion'] = face_info['emotion']
                 # info['focus'] = face_info['emotion']
                 # update_old_info = True
                 flag = False
                 break
         if flag:
-            self.faces_infos.setdefault(face_info['time'], []).append(face_info)
+            self.faces_infos.setdefault(face_info['time'], []).append(face_info['data'])
         print(self.faces_infos)
         # if the face info dosn't exist in the faces list, add it
         # if not update_old_info:
