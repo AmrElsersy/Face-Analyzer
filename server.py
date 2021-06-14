@@ -16,43 +16,27 @@ class FaceInfoTracker:
     def __init__(self):
         # list of json faces infos
         self.faces_infos = dict()
-
         self.socket = socket.socket(socket.AF_INET,socket.SOCK_DGRAM)
         self.target_address = None
+        self.current= False 
 
     def add_info(self, face_info):
-
-        # if the same person sent a face info during the timeout, update its values
-        # update_old_info = False
         flag = True
         if not face_info['time'] in self.faces_infos:
+            if self.current:
+                pickle_msg = pickle.dumps(self.faces_infos[self.current])#send this to the application
+                self.socket.sendto(pickle_msg, self.target_address)
+                del self.faces_infos[self.current]
             self.faces_infos.setdefault(face_info['time'], []).append(face_info['data'])
+            self.current = face_info['time']
 
         for info in self.faces_infos[face_info['time']]:
             if info['name'] == face_info['data']['name']:
-                # info['emotion'] = face_info['emotion']
-                # info['focus'] = face_info['emotion']
-                # update_old_info = True
                 flag = False
                 break
         if flag:
             self.faces_infos.setdefault(face_info['time'], []).append(face_info['data'])
         print(self.faces_infos)
-        # if the face info dosn't exist in the faces list, add it
-        # if not update_old_info:
-        #     self.faces_infos.append(face_info)
-
-    # def clear(self):
-
-    #     if self.target_address:
-    #         # send to ogranizer
-    #         # encode with pickle .. converts the list into bytes
-    #         pickle_msg = pickle.dumps(self.faces_infos)
-    #         # send to udp receiver
-    #         self.socket.sendto(pickle_msg, self.target_address)
-
-    #     print("clear", self.faces_infos, "\n")
-    #     self.faces_infos.clear()
 
 #  ===================== App - Tracker ========================
 app = Flask(__name__)
