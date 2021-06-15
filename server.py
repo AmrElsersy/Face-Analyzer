@@ -2,7 +2,7 @@ from flask import Flask, request, jsonify
 from threading import Thread, Event
 import socket, json
 import pickle
-
+import collections
 """
 Received Face Info
 {
@@ -18,25 +18,24 @@ class FaceInfoTracker:
         self.faces_infos = dict()
         self.socket = socket.socket(socket.AF_INET,socket.SOCK_DGRAM)
         self.target_address = None
-        self.current= False 
+        self.current= collections.deque([])
 
     def add_info(self, face_info):
         flag = True
         if not face_info['time'] in self.faces_infos:
-            if self.current:
-                pickle_msg = pickle.dumps(self.faces_infos[self.current])#send this to the application
+            if len(self.current) == 2: #You can change the length here, according how long the you are okay with the delaying
+                pickle_msg = pickle.dumps(self.faces_infos[self.current[0]])#send this to the application
                 self.socket.sendto(pickle_msg, self.target_address)
-                del self.faces_infos[self.current]
+                del self.faces_infos[self.current[0]]
+                self.current.popleft()
             self.faces_infos.setdefault(face_info['time'], []).append(face_info['data'])
-            self.current = face_info['time']
-
+            self.current.append(face_info['time'])
         for info in self.faces_infos[face_info['time']]:
             if info['name'] == face_info['data']['name']:
                 flag = False
                 break
         if flag:
             self.faces_infos.setdefault(face_info['time'], []).append(face_info['data'])
-        print(self.faces_infos)
 
 #  ===================== App - Tracker ========================
 app = Flask(__name__)
