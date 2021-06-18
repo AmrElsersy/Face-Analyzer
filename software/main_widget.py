@@ -1,12 +1,12 @@
 from PyQt5.QtWidgets import QApplication, QWidget, QTabWidget, QVBoxLayout
 from PyQt5.QtGui import QIcon, QPalette, QColor
 from PyQt5 import QtGui
-from live_graph import Live_Graph
-from live_hist import Live_Histogram
-from pie_chart import GazeTrackingChart
+from software.live_graph import Live_Graph
+from software.live_hist import Live_Histogram
+from software.pie_chart import GazeTrackingChart
 import sys
 
-from utils import dataSend
+from software.utils import data_send
 import threading
 
 
@@ -15,7 +15,7 @@ class Live_Statistics(QWidget):
         # call the constructor of the parent (QWidget)
         super(Live_Statistics, self).__init__()
 
-        self.interval = 200
+        self.interval = 1000
 
         # set title  and geometry for the window
         self.setWindowTitle("Live Statistics")
@@ -39,7 +39,7 @@ class Live_Statistics(QWidget):
 
         self.createTabs()
 
-        dataLoop = threading.Thread(name='dataLoop', target=dataSend, daemon=True,
+        dataLoop = threading.Thread(name='data_send', target=data_send, daemon=True,
                                     args=(self.addData_callbackFunc, self.interval))
         dataLoop.start()
 
@@ -72,12 +72,12 @@ class Live_Statistics(QWidget):
         qRect.moveCenter(centerPoint)
         self.move(qRect.topLeft())
 
-
-def main():
-    app = QApplication(sys.argv)
-    main = Live_Statistics()
-    main.show()
-    sys.exit(app.exec_())
-
-if __name__ == "__main__":
-    main()
+#
+# def main():
+#     app = QApplication(sys.argv)
+#     main = Live_Statistics()
+#     main.show()
+#     sys.exit(app.exec_())
+#
+# if __name__ == "__main__":
+#     main()

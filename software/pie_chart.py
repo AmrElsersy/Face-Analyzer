@@ -3,12 +3,12 @@ from PyQt5.QtChart import QChart, QChartView, QPieSeries
 from PyQt5.QtCore import Qt
 from PyQt5.QtGui import QPen
 
-from utils import processGazeTracking
+from software.utils import processGazeTracking
 
 class GazeTrackingChart(QWidget):
     def __init__(self):
         super(GazeTrackingChart, self).__init__()
-        self.status = ['right', 'left', 'blink', 'focus']
+        self.status = ['not focus', 'focus']
 
         self.series = QPieSeries()
         # Hovering signal

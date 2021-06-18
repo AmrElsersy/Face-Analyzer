@@ -10,7 +10,7 @@ from matplotlib.lines import Line2D
 from matplotlib.animation import TimedAnimation
 from matplotlib.ticker import MaxNLocator
 
-from utils import processData, Status
+from software.utils import processData, Status
 
 import matplotlib
 import numpy as np

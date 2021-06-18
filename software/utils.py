@@ -1,5 +1,6 @@
 from PyQt5.QtCore import QObject, pyqtSignal
 import numpy as np
+import requests
 import time
 
 class Thread(QObject):
@@ -31,15 +32,11 @@ def processData(data):
     return status
 
 def processGazeTracking(data):
-    status = {"right": 0,
-              "left": 0,
-              "blink": 0,
+    status = {"not focus": 0,
               "focus": 0}
 
     for el in data:
-        status["right"] += el["right"]
-        status["left"] += el["left"]
-        status["blink"] += el["blink"]
+        status["not focus"] += el["not focus"]
         status["focus"] += el["focus"]
 
     return status
@@ -55,6 +52,11 @@ def dataSend(addData_callbackFunc, interval):
         signal.thread_signal.emit(data)
     pass
 
+def data_send(cfg, signal):
+    data = requests.get(cfg.url)
+    signal.thread_signal.emit(data)
+
+
 def generateRandData(n):
     data = []
     for i in range(n):
@@ -66,9 +68,7 @@ def generateRandData(n):
                   "surprise": round(np.random.rand()),
                   "neutral": round(np.random.rand()),
                   "focus": round(np.random.rand()),
-                  "right": round(np.random.rand()),
-                  "left": round(np.random.rand()),
-                  "blink": round(np.random.rand())}
+                  "not focus": round(np.random.rand())}
         data.append(status)
 
     return data

@@ -8,7 +8,7 @@ from matplotlib.figure import Figure
 from matplotlib.animation import TimedAnimation
 from matplotlib.ticker import MaxNLocator
 
-from utils import processData
+from software.utils import processData
 
 import matplotlib
 import numpy as np
