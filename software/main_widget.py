@@ -23,13 +23,14 @@ class Live_Statistics(QWidget):
         self.face_analyzer = Face_Analyzer(self.cfg)
         self.worker = Worker()
         self.timer = QTimer()
-        self.thread = QThread()
-        self.timer.moveToThread(self.thread)
+        # self.thread = QThread()
+        # self.timer.moveToThread(self.thread)
         self.timer.setInterval(self.interval)
         self.timer.timeout.connect(self.post_status)
         self.worker.thread_signal.connect(self.addData)
-        self.thread.started.connect(self.timer.start)
-        self.thread.start()
+        # self.thread.started.connect(self.timer.start)
+        # self.thread.start()
+        self.timer.start()
 
         # set title  and geometry for the window
         self.setWindowTitle("Live Statistics")
@@ -54,7 +55,8 @@ class Live_Statistics(QWidget):
         self.createTabs()
 
     def post_status(self):
-        self.face_analyzer.analyze_face()
+        if self.cfg.analyze_doctor:
+            self.face_analyzer.analyze_face()
         if self.user_type == "doctor":
             data = requests.get(self.cfg.url).json()["face_info"]
             self.worker.thread_signal.emit(data)
