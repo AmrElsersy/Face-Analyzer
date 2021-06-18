@@ -60,6 +60,7 @@ class CustomFigHist(FigureCanvas, TimedAnimation):
 
     def addData(self, data):
         status = processData(data)
+        print("Live Histogram: ", status)
         self.steps += 1
 
         for i in range(len(self.current_features)):

@@ -1,21 +1,35 @@
-from PyQt5.QtWidgets import QApplication, QWidget, QTabWidget, QVBoxLayout
+from PyQt5.QtWidgets import QWidget, QTabWidget, QVBoxLayout
 from PyQt5.QtGui import QIcon, QPalette, QColor
+from PyQt5.QtCore import QThread, QTimer
 from PyQt5 import QtGui
 from software.live_graph import Live_Graph
 from software.live_hist import Live_Histogram
 from software.pie_chart import GazeTrackingChart
-import sys
+from camera_demo import Face_Analyzer
+import requests
 
-from software.utils import data_send, Thread
-import threading
+from software.utils import Worker
 
 
 class Live_Statistics(QWidget):
-    def __init__(self, url):
+    def __init__(self, cfg):
         # call the constructor of the parent (QWidget)
         super(Live_Statistics, self).__init__()
 
-        self.interval = 1000
+        self.interval = cfg.interval
+        self.cfg = cfg
+        self.user_type = self.cfg.type
+
+        self.face_analyzer = Face_Analyzer(self.cfg)
+        self.worker = Worker()
+        self.timer = QTimer()
+        self.thread = QThread()
+        self.timer.moveToThread(self.thread)
+        self.timer.setInterval(self.interval)
+        self.timer.timeout.connect(self.post_status)
+        self.worker.thread_signal.connect(self.addData)
+        self.thread.started.connect(self.timer.start)
+        self.thread.start()
 
         # set title  and geometry for the window
         self.setWindowTitle("Live Statistics")
@@ -39,14 +53,13 @@ class Live_Statistics(QWidget):
 
         self.createTabs()
 
-        signal = Thread()
-        signal.thread_signal.connect(self.addData_callbackFunc)
+    def post_status(self):
+        self.face_analyzer.analyze_face()
+        if self.user_type == "doctor":
+            data = requests.get(self.cfg.url).json()["face_info"]
+            self.worker.thread_signal.emit(data)
 
-        dataSend = threading.Thread(name='data_send', target=data_send, daemon=True,
-                                    args=(url, signal))
-        dataSend.start()
-
-    def addData_callbackFunc(self, data):
+    def addData(self, data):
         self.live_graph.customFig.addData(data)
         self.live_hist.customFig.addData(data)
         self.gaze_chart.addData(data)
@@ -74,13 +87,3 @@ class Live_Statistics(QWidget):
         centerPoint = QtGui.QGuiApplication.primaryScreen().availableGeometry().center()
         qRect.moveCenter(centerPoint)
         self.move(qRect.topLeft())
-
-#
-# def main():
-#     app = QApplication(sys.argv)
-#     main = Live_Statistics()
-#     main.show()
-#     sys.exit(app.exec_())
-#
-# if __name__ == "__main__":
-#     main()

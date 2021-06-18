@@ -159,6 +159,7 @@ class CustomFigGraph(FigureCanvas, TimedAnimation):
 
     def addData(self, data):
         status = processData(data)
+        print("Live Graph: ", status)
         self.time += 1
 
         for i in range(len(self.current_features)):

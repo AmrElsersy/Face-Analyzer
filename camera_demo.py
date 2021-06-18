@@ -1,7 +1,6 @@
 from math import floor
 import sys
 import time
-import argparse
 import cv2
 import torch
 from face_detector.face_detector import DnnDetector, HaarCascadeDetector
@@ -20,16 +19,6 @@ class Face_Analyzer:
         self.args = args
         self.face_alignment = FaceAlignment()
         self.focus_detector = focusDetector()
-
-        self.status = {"angry": 0,
-                  "disgust": 0,
-                  "fear": 0,
-                  "happy": 0,
-                  "sad": 0,
-                  "surprise": 0,
-                  "neutral": 0,
-                  "focus": 0,
-                  "not focus": 0}
 
         # Face detection
         root = 'face_detector'
@@ -52,7 +41,15 @@ class Face_Analyzer:
 
 
     def analyze_face(self):
-
+        status = {"angry": 0,
+                  "disgust": 0,
+                  "fear": 0,
+                  "happy": 0,
+                  "sad": 0,
+                  "surprise": 0,
+                  "neutral": 0,
+                  "focus": 0,
+                  "not focus": 0}
 
         video = None
         isOpened = False
@@ -103,29 +100,29 @@ class Face_Analyzer:
 
                 focus = self.focus_detector.focused(input_face)
 
-                self.status[emo_label] = 1
+                status[emo_label] = 1
                 if focus:
-                    self.status["focus"] = 1
+                    status["focus"] = 1
                 else:
-                    self.status["not focus"] = 1
+                    status["not focus"] = 1
 
-                self.status["time"] = str(int(time.time()/(max(min_time * 0.9, 1e-4))))
+                status["time"] = str(int(time.time()/(max(min_time * 0.9, 1e-4))))
 
                 # send to the server
                 info = {
                     'data': {'name': self.args.name,
-                             "angry": self.status["angry"],
-                             "disgust": self.status["disgust"],
-                             "fear": self.status["fear"],
-                             "happy": self.status["happy"],
-                             "sad": self.status["sad"],
-                             "surprise": self.status["surprise"],
-                             "neutral": self.status["neutral"],
-                             "focus": self.status["focus"],
-                             "not focus": self.status["not focus"]},
+                             "angry": status["angry"],
+                             "disgust": status["disgust"],
+                             "fear": status["fear"],
+                             "happy": status["happy"],
+                             "sad": status["sad"],
+                             "surprise": status["surprise"],
+                             "neutral": status["neutral"],
+                             "focus": status["focus"],
+                             "not focus": status["not focus"]},
                     'time': str(int(time.time() / (max(min_time * 0.9, 1e-4))))
                 }
-                print(info)
+                # print(info)
                 requests.post(self.args.url, json=info)
 
                 # cv2.imshow('input face', cv2.resize(input_face, (120, 120)))

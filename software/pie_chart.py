@@ -34,6 +34,7 @@ class GazeTrackingChart(QWidget):
 
     def addData(self, data):
         status = processGazeTracking(data)
+        print("Live Gaze Tracking: ", status)
 
         self.series.clear()
         for state in self.status:

@@ -1,9 +1,8 @@
 from PyQt5.QtCore import QObject, pyqtSignal
 import numpy as np
-import requests
 import time
 
-class Thread(QObject):
+class Worker(QObject):
     thread_signal = pyqtSignal(list)
 
 class Status(QObject):
@@ -43,20 +42,13 @@ def processGazeTracking(data):
 
 def dataSend(addData_callbackFunc, interval):
     # setup the signal-slot mechanism.
-    signal = Thread()
+    signal = Worker()
     signal.thread_signal.connect(addData_callbackFunc)
     n = 1000
     for i in range(n):
         data = generateRandData(n)
         time.sleep(interval/1000)
         signal.thread_signal.emit(data)
-    pass
-
-def data_send(url, signal):
-    data = requests.get(url).json()["face_info"]
-    print(data)
-    signal.thread_signal.emit(data)
-
 
 def generateRandData(n):
     data = []
