@@ -9,9 +9,9 @@ import sys
 
 def parse_configs():
     parser = argparse.ArgumentParser(description='Face Analyzer')
-    parser.add_argument('--type', type=str, default="student", help="run meeting application")
+    parser.add_argument('--type', type=str, default="doctor", help="run meeting application")
     parser.add_argument('--url', type=str, default='https://airay2-backend.herokuapp.com/faces_info')
-    parser.add_argument('--name', type=str, help='unique name of the user', default='ray2')
+    parser.add_argument('--name', type=str, help='unique name of the user', default='moamen')
     parser.add_argument('--haar', action='store_true', help='run the haar cascade face detector')
     parser.add_argument('--path', type=str, default='', help='path to video to test')
     parser.add_argument('--image', action='store_true', help='specify if you test image or not')

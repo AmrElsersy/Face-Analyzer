@@ -112,8 +112,21 @@ class Face_Analyzer:
                 self.status["time"] = str(int(time.time()/(max(min_time * 0.9, 1e-4))))
 
                 # send to the server
-                print(self.status)
-                requests.post(self.args.url, json=self.status)
+                info = {
+                    'data': {'name': self.args.name,
+                             "angry": self.status["angry"],
+                             "disgust": self.status["disgust"],
+                             "fear": self.status["fear"],
+                             "happy": self.status["happy"],
+                             "sad": self.status["sad"],
+                             "surprise": self.status["surprise"],
+                             "neutral": self.status["neutral"],
+                             "focus": self.status["focus"],
+                             "not focus": self.status["not focus"]},
+                    'time': str(int(time.time() / (max(min_time * 0.9, 1e-4))))
+                }
+                print(info)
+                requests.post(self.args.url, json=info)
 
                 # cv2.imshow('input face', cv2.resize(input_face, (120, 120)))
                 # cv2.rectangle(frame, (x, y), (x + w, y + h), (200, 100, 0), 3)
