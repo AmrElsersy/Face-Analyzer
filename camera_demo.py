@@ -132,7 +132,7 @@ def main(args):
 
 if __name__ == '__main__':
     parser = argparse.ArgumentParser()
-    parser.add_argument('--url', type=str, default='http://127.0.0.1:8008/faces_info')
+    parser.add_argument('--url', type=str, default='https://airay2-backend.herokuapp.com/faces_info')
     parser.add_argument('--name', type=str, help='unique name of the user', default='ray2')
     parser.add_argument('--haar', action='store_true', help='run the haar cascade face detector')
     parser.add_argument('--path', type=str, default='', help='path to video to test')
