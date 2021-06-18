@@ -77,10 +77,10 @@ class Face_Analyzer:
         if self.args.path:
             frame = cv2.resize(frame, (640, 480))
 
-        # time
-        t2 = time.time()
-        fps = round(1/(t2-t1))
-        t1 = t2
+        # # time
+        # t2 = time.time()
+        # fps = round(1/(t2-t1))
+        # t1 = t2
 
         # check min time
 
@@ -105,22 +105,20 @@ class Face_Analyzer:
 
             status["time"] = str(int(time.time()/(max(min_time * 0.9, 1e-4))))
 
-            if (t2 - last_frame_time) >= min_time:
-                last_frame_time = t2
-                info = {
-                    'data': {'name': self.args.name,
-                            "angry": status["angry"],
-                            "disgust": status["disgust"],
-                            "fear": status["fear"],
-                            "happy": status["happy"],
-                            "sad": status["sad"],
-                            "surprise": status["surprise"],
-                            "neutral": status["neutral"],
-                            "focus": status["focus"],
-                            "not focus": status["not focus"]},
-                    'time': str(int(time.time() / (max(min_time - 2, 1e-4))))
-                }
-                requests.post(self.args.url, json=info)
+            info = {
+                'data': {'name': self.args.name,
+                        "angry": status["angry"],
+                        "disgust": status["disgust"],
+                        "fear": status["fear"],
+                        "happy": status["happy"],
+                        "sad": status["sad"],
+                        "surprise": status["surprise"],
+                        "neutral": status["neutral"],
+                        "focus": status["focus"],
+                        "not focus": status["not focus"]},
+                'time': str(int(time.time() / (max((self.args.interval/1000), 1e-4))))
+            }
+            requests.post(self.args.url, json=info)
 
         if not self.args.image:
             video.release()
