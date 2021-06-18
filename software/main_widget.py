@@ -6,12 +6,12 @@ from software.live_hist import Live_Histogram
 from software.pie_chart import GazeTrackingChart
 import sys
 
-from software.utils import data_send
+from software.utils import data_send, Thread
 import threading
 
 
 class Live_Statistics(QWidget):
-    def __init__(self):
+    def __init__(self, url):
         # call the constructor of the parent (QWidget)
         super(Live_Statistics, self).__init__()
 
@@ -39,9 +39,12 @@ class Live_Statistics(QWidget):
 
         self.createTabs()
 
-        dataLoop = threading.Thread(name='data_send', target=data_send, daemon=True,
-                                    args=(self.addData_callbackFunc, self.interval))
-        dataLoop.start()
+        signal = Thread()
+        signal.thread_signal.connect(self.addData_callbackFunc)
+
+        dataSend = threading.Thread(name='data_send', target=data_send, daemon=True,
+                                    args=(url, signal))
+        dataSend.start()
 
     def addData_callbackFunc(self, data):
         self.live_graph.customFig.addData(data)

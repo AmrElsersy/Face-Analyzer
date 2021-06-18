@@ -52,8 +52,9 @@ def dataSend(addData_callbackFunc, interval):
         signal.thread_signal.emit(data)
     pass
 
-def data_send(cfg, signal):
-    data = requests.get(cfg.url)
+def data_send(url, signal):
+    data = requests.get(url).json()["face_info"]
+    print(data)
     signal.thread_signal.emit(data)
 
 

@@ -2,9 +2,8 @@ from PyQt5.QtWidgets import QApplication
 from software.main_widget import Live_Statistics
 from camera_demo import analyze_face
 from easydict import EasyDict as edict
-from software.utils import Thread
+from software.utils import Thread, data_send
 import argparse
-import requests
 import sys
 
 
@@ -21,9 +20,6 @@ def parse_configs():
 
     return configs
 
-def data_send(cfg, signal):
-    data = requests.get(cfg.url)
-    signal.thread_signal.emit(data)
 
 def main():
     app = QApplication(sys.argv)
@@ -32,7 +28,7 @@ def main():
     live = None
     signal = None
     if user_type == "doctor":
-        live = Live_Statistics()
+        live = Live_Statistics(cfg.url)
         signal = Thread()
         signal.thread_signal.connect(live.addData_callbackFunc)
         live.show()
@@ -41,7 +37,7 @@ def main():
     while True:
         analyze_face(cfg)
         if user_type == "doctor":
-            data_send(cfg, signal)
+            data_send(cfg.url, signal)
 
 
 if __name__ == "__main__":
