@@ -120,7 +120,7 @@ class Face_Analyzer:
                              "neutral": status["neutral"],
                              "focus": status["focus"],
                              "not focus": status["not focus"]},
-                    'time': str(int(time.time() / (max(min_time * 0.9, 1e-4))))
+                    'time': str(int(time.time() / (max(min_time - 2, 1e-4))))
                 }
                 # print(info)
                 requests.post(self.args.url, json=info)

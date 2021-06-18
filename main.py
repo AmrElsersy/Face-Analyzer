@@ -16,7 +16,7 @@ def parse_configs():
     parser.add_argument('--haar', action='store_true', help='run the haar cascade face detector')
     parser.add_argument('--path', type=str, default='', help='path to video to test')
     parser.add_argument('--image', action='store_true', help='specify if you test image or not')
-    parser.add_argument('--fps', type=int, default=0.1, help='num of frames per second to capture info')
+    parser.add_argument('--fps', type=int, default=0.25, help='num of frames per second to capture info')
     configs = edict(vars(parser.parse_args()))
 
     return configs
