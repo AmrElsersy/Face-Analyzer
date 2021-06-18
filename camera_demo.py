@@ -83,76 +83,44 @@ class Face_Analyzer:
         t1 = t2
 
         # check min time
-        if (t2 - last_frame_time) >= min_time:
-            # reset timing calculations
-            last_frame_time = t2
 
-            # faces
-            faces = self.face_detector.detect_faces(frame)
+        # faces
+        faces = self.face_detector.detect_faces(frame)
 
-            for face in faces:
-                (x,y,w,h) = face
+        for face in faces:
+            (x,y,w,h) = face
 
-                # preprocessing
-                input_face = self.face_alignment.frontalize_face(face, frame)
+            # preprocessing
+            input_face = self.face_alignment.frontalize_face(face, frame)
 
-                emo_proba, emo_label = self.get_emotion(input_face)
+            emo_proba, emo_label = self.get_emotion(input_face)
 
-                focus = self.focus_detector.focused(input_face)
+            focus = self.focus_detector.focused(input_face)
 
-                status[emo_label] = 1
-                if focus:
-                    status["focus"] = 1
-                else:
-                    status["not focus"] = 1
+            status[emo_label] = 1
+            if focus:
+                status["focus"] = 1
+            else:
+                status["not focus"] = 1
 
-                status["time"] = str(int(time.time()/(max(min_time * 0.9, 1e-4))))
+            status["time"] = str(int(time.time()/(max(min_time * 0.9, 1e-4))))
 
-                # send to the server
+            if (t2 - last_frame_time) >= min_time:
+                last_frame_time = t2
                 info = {
                     'data': {'name': self.args.name,
-                             "angry": status["angry"],
-                             "disgust": status["disgust"],
-                             "fear": status["fear"],
-                             "happy": status["happy"],
-                             "sad": status["sad"],
-                             "surprise": status["surprise"],
-                             "neutral": status["neutral"],
-                             "focus": status["focus"],
-                             "not focus": status["not focus"]},
+                            "angry": status["angry"],
+                            "disgust": status["disgust"],
+                            "fear": status["fear"],
+                            "happy": status["happy"],
+                            "sad": status["sad"],
+                            "surprise": status["surprise"],
+                            "neutral": status["neutral"],
+                            "focus": status["focus"],
+                            "not focus": status["not focus"]},
                     'time': str(int(time.time() / (max(min_time - 2, 1e-4))))
                 }
-                # print(info)
                 requests.post(self.args.url, json=info)
 
-                # cv2.imshow('input face', cv2.resize(input_face, (120, 120)))
-                # cv2.rectangle(frame, (x, y), (x + w, y + h), (200, 100, 0), 3)
-                # cv2.putText(
-                #     frame,
-                #     focus,
-                #     (x, y + 1),
-                #     cv2.FONT_HERSHEY_SIMPLEX,
-                #     0.8,
-                #     (0, 200, 200),
-                #     2,
-                # )
-                # cv2.putText(
-                #     frame,
-                #     "{} {}".format(emotion_label, int(emotion_prob * 100)),
-                #     (x+w, y + 1),
-                #     cv2.FONT_HERSHEY_SIMPLEX,
-                #     0.8,
-                #     (0, 200, 200),
-                #     2,
-                # )
-
-            # draw FPS
-            # cv2.putText(frame, str(fps), (10,25), cv2.FONT_HERSHEY_SIMPLEX, 1, (0,255,0))
-            # cv2.imshow("Video", frame)
-            # if cv2.waitKey(1) & 0xff == 27:
-            #     if not args.image:
-            #         video.release()
-            #     break
-
-            if not self.args.image:
-                video.release()
+        if not self.args.image:
+            video.release()
