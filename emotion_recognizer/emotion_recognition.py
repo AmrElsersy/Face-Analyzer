@@ -19,11 +19,10 @@ FER_2013_EMO_DICT = {
 }
 
 state = torch.load(
-    "./checkpoints/Z_resmasking_dropout1_rot30_2019Nov30_13.32"
-)
+    "./checkpoints/Z_resmasking_dropout1_rot30_2019Nov30_13.32", map_location='cpu')
 
 model = resmasking_dropout1()
-model.cuda()
+# model.cuda()
 
 model.load_state_dict(state["net"])
 model.eval()
@@ -44,7 +43,8 @@ def recognize_face(face):
     with torch.no_grad():
         face = ensure_color(face)
         face = ensure_size(face)
-        face = transform(face).cuda()
+        face = transform(face)
+        # face = transform(face).cuda()
         face = torch.unsqueeze(face, dim=0)
 
         start = time.time()
