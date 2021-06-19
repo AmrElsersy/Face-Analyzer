@@ -20,6 +20,14 @@ class Face_Analyzer:
         self.face_alignment = FaceAlignment()
         self.focus_detector = focusDetector()
 
+        if not self.args.image:
+            if self.args.path:
+                self.video = cv2.VideoCapture(self.args.path)
+            else:
+                self.video = cv2.VideoCapture(0) # 480, 640
+            isOpened = self.video.isOpened()
+            print('video.isOpened:', isOpened)
+
         # Face detection
         root = 'face_detector'
         self.face_detector = None
@@ -51,27 +59,17 @@ class Face_Analyzer:
                   "focus": 0,
                   "not focus": 0}
 
-        video = None
-        isOpened = False
-        if not self.args.image:
-            if self.args.path:
-                video = cv2.VideoCapture(self.args.path)
-            else:
-                video = cv2.VideoCapture(0) # 480, 640
-            isOpened = video.isOpened()
-            print('video.isOpened:', isOpened)
-
         t1 = 0
         t2 = 0
-        min_time = 1 / self.args.fps
-        last_frame_time = 0
+        # min_time = 1 / self.args.fps
+        # last_frame_time = 0
 
 
         if self.args.image:
             frame = cv2.imread(self.args.path)
         else:
-            _, frame = video.read()
-            isOpened = video.isOpened()
+            _, frame = self.video.read()
+            isOpened = self.video.isOpened()
 
         # if loaded video or image (not live camera) .. resize it (helpful in mobile camera with has different resolution)
         if self.args.path:
@@ -103,22 +101,20 @@ class Face_Analyzer:
             else:
                 status["not focus"] = 1
 
-            status["time"] = str(int(time.time()/(max(min_time * 0.9, 1e-4))))
-
             info = {
                 'data': {'name': self.args.name,
-                        "angry": status["angry"],
-                        "disgust": status["disgust"],
-                        "fear": status["fear"],
-                        "happy": status["happy"],
-                        "sad": status["sad"],
-                        "surprise": status["surprise"],
-                        "neutral": status["neutral"],
-                        "focus": status["focus"],
-                        "not focus": status["not focus"]},
+                         "angry": status["angry"],
+                         "disgust": status["disgust"],
+                         "fear": status["fear"],
+                         "happy": status["happy"],
+                         "sad": status["sad"],
+                         "surprise": status["surprise"],
+                         "neutral": status["neutral"],
+                         "focus": status["focus"],
+                         "not focus": status["not focus"]},
                 'time': str(int(time.time() / (max((self.args.interval/1000), 1e-4))))
             }
             requests.post(self.args.url, json=info)
 
-        if not self.args.image:
-            video.release()
+        # if not self.args.image:
+        #     self.video.release()

@@ -9,7 +9,7 @@ import sys
 def parse_configs():
     parser = argparse.ArgumentParser(description='Face Analyzer')
     parser.add_argument('--type', type=str, default="doctor", help="run meeting application")
-    parser.add_argument('--analyze_doctor', action='store_true', help="analyze face of doctor")
+    parser.add_argument('--analyze_doctor', action='store_true', default=True, help="analyze face of doctor")
     parser.add_argument('--url', type=str, default='https://airay2-backend.herokuapp.com/faces_info')
     parser.add_argument('--name', type=str, help='unique name of the user', default='moamen')
     parser.add_argument('--interval', type=int, help='time interval for updating the graph', default=3000)

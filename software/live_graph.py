@@ -122,6 +122,7 @@ class CustomFigGraph(FigureCanvas, TimedAnimation):
 
         self.current_features = [np.array([])] * 8
         self.time = 0
+        self.interval = interval
 
         self.fig = Figure(figsize=(11, 9), dpi=100, facecolor=(1, 1, 1), edgecolor=(0, 0, 0))
         self.ax = self.fig.add_subplot(111)
@@ -144,13 +145,13 @@ class CustomFigGraph(FigureCanvas, TimedAnimation):
         self.ax.legend(self.lines, features, bbox_to_anchor=(0.915, 1.15), loc='upper left', borderaxespad=0.)
 
         FigureCanvas.__init__(self, self.fig)
-        TimedAnimation.__init__(self, self.fig, interval=interval, blit=False)
+        TimedAnimation.__init__(self, self.fig, interval=self.interval, blit=False)
 
     def read_status(self, status):
         self.status = status
 
     def new_frame_seq(self):
-        it = iter(range(self.time))
+        it = iter(range(int(self.time/int(self.interval/1000))))
         return it
 
     def _init_draw(self):
@@ -160,7 +161,7 @@ class CustomFigGraph(FigureCanvas, TimedAnimation):
     def addData(self, data):
         status = processData(data)
         print("Live Graph: ", status)
-        self.time += 1
+        self.time += int(self.interval/1000)
 
         for i in range(len(self.current_features)):
             self.current_features[i] = np.append(self.current_features[i], status[self.features[i][0]])
@@ -174,12 +175,12 @@ class CustomFigGraph(FigureCanvas, TimedAnimation):
 
     def _draw_frame(self, framedata):
         arrays = [arr for i, arr in enumerate(self.current_features) if self.status[i]]
-        ylim_max = np.maximum.reduce(arrays).max() + 25
-        ylim_min = np.minimum.reduce(arrays).min() - 25
-        self.ax.set_xlim(0, self.time)
+        ylim_max = np.maximum.reduce(arrays).max() + 5
+        ylim_min = np.minimum.reduce(arrays).min() - 5
+        self.ax.set_xlim(1, self.time)
         self.ax.set_ylim(ylim_min, ylim_max)
 
-        t = np.linspace(0, self.time - 1, num=self.time)
+        t = np.linspace(1, self.time, num=int(self.time/int(self.interval/1000)))
 
         lines = []
         for i in range(len(self.current_features)):

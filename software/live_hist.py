@@ -74,8 +74,8 @@ class CustomFigHist(FigureCanvas, TimedAnimation):
             TimedAnimation._stop(self)
 
     def _draw_frame(self, framedata):
-        ylim_max = np.maximum.reduce(self.current_features).max() + 25
-        ylim_min = np.minimum.reduce(self.current_features).min() - 25
+        ylim_max = np.maximum.reduce(self.current_features).max() + 5
+        ylim_min = np.minimum.reduce(self.current_features).min() - 5
         self.ax.set_ylim(ylim_min, ylim_max)
 
         for rect, h in zip(self.patches, self.current_features):
