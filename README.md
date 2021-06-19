@@ -69,8 +69,8 @@ python main.py --name your_name --type student
 python main.py --name your_name --type doctor
 
 # select the time interval to update the graph in msec
-python main.py --interval 1000
+python main.py --name your_name --type doctor --interval 1000
 
-# add analyze_doctor option to analyze the doctor with the students
+# add analyze_doctor option to analyze the doctor with the students (by default it is false)
 python main.py --analyze_doctor --type doctor
 ```
