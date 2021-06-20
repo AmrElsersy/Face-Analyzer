@@ -178,7 +178,7 @@ class CustomFigGraph(FigureCanvas, TimedAnimation):
         ylim_max = np.maximum.reduce(arrays).max() + 5
         ylim_min = np.minimum.reduce(arrays).min() - 5
         self.ax.set_xlim(1, self.time)
-        self.ax.set_ylim(ylim_min, ylim_max)
+        self.ax.set_ylim(max(ylim_min, 0), ylim_max)
 
         t = np.linspace(1, self.time, num=int(self.time/int(self.interval/1000)))
 

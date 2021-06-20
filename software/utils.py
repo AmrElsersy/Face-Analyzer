@@ -8,6 +8,15 @@ class Worker(QObject):
 class Status(QObject):
     status_signal = pyqtSignal(list)
 
+def normalize_state(state):
+    out = 0
+    if state == 0:
+        out = 20
+    else:
+        out = state*20 + 20
+
+    return out
+
 def processData(data):
     status = {"angry": 0,
               "disgust": 0,
@@ -19,14 +28,14 @@ def processData(data):
               "focus": 0}
 
     for el in data:
-        status["angry"] += el["angry"]
-        status["disgust"] += el["disgust"]
-        status["fear"] += el["fear"]
-        status["happy"] += el["happy"]
-        status["sad"] += el["sad"]
-        status["surprise"] += el["surprise"]
-        status["neutral"] += el["neutral"]
-        status["focus"] += el["focus"]
+        status["angry"] += normalize_state(el["angry"])
+        status["disgust"] += normalize_state(el["disgust"])
+        status["fear"] += normalize_state(el["fear"])
+        status["happy"] += normalize_state(el["happy"])
+        status["sad"] += normalize_state(el["sad"])
+        status["surprise"] += normalize_state(el["surprise"])
+        status["neutral"] += normalize_state(el["neutral"])
+        status["focus"] += normalize_state(el["focus"])
 
     return status
 
@@ -35,8 +44,8 @@ def processGazeTracking(data):
               "focus": 0}
 
     for el in data:
-        status["not focus"] += el["not focus"]
-        status["focus"] += el["focus"]
+        status["not focus"] += normalize_state(el["not focus"])
+        status["focus"] += normalize_state(el["focus"])
 
     return status
 
