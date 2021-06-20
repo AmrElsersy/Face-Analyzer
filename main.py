@@ -8,7 +8,8 @@ import sys
 
 def parse_configs():
     parser = argparse.ArgumentParser(description='Face Analyzer')
-    parser.add_argument('--type', type=str, default="doctor", help="run meeting application")
+    parser.add_argument('--type', type=str, default="student", help="run meeting application")
+    parser.add_argument('--show', action='store_true', help="show teh emotion on a widget")
     parser.add_argument('--analyze_doctor', action='store_true', help="analyze face of doctor")
     parser.add_argument('--url', type=str, default='https://airay2-backend.herokuapp.com/faces_info')
     parser.add_argument('--name', type=str, help='unique name of the user', default='moamen')
@@ -24,7 +25,7 @@ def parse_configs():
 def main():
     app = QApplication(sys.argv)
     cfg = parse_configs()
-    res = requests.get(cfg.url, "clear")
+    requests.get(cfg.url, "clear")
     user_type = cfg.type
     live = Live_Statistics(cfg)
     if user_type == "doctor":

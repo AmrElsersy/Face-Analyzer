@@ -73,4 +73,7 @@ python main.py --name your_name --type doctor --interval 1000
 
 # add analyze_doctor option to analyze the doctor with the students (by default it is false)
 python main.py --analyze_doctor --type doctor
+
+# show the face and the emotion on the image with show argument
+python main.py --name your_name --type student --show
 ```

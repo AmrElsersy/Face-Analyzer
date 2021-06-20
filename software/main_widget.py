@@ -20,7 +20,8 @@ class Live_Statistics(QWidget):
         self.cfg = cfg
         self.user_type = self.cfg.type
 
-        self.face_analyzer = Face_Analyzer(self.cfg)
+        if self.user_type != "doctor" or (self.cfg.analyze_doctor and self.user_type == "doctor"):
+            self.face_analyzer = Face_Analyzer(self.cfg)
         self.worker = Worker()
         self.timer = QTimer()
         self.thread = QThread()

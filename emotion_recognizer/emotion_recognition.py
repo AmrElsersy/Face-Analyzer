@@ -1,4 +1,5 @@
 import time
+import torch
 import cv2
 import numpy as np
 import torch
@@ -18,11 +19,17 @@ FER_2013_EMO_DICT = {
     6: "neutral",
 }
 
-state = torch.load(
-    "./checkpoints/Z_resmasking_dropout1_rot30_2019Nov30_13.32", map_location='cpu')
+if torch.cuda.is_available():
+	state = torch.load(
+	    "./checkpoints/Z_resmasking_dropout1_rot30_2019Nov30_13.32")
+else:
+	state = torch.load(
+	    "./checkpoints/Z_resmasking_dropout1_rot30_2019Nov30_13.32", map_location='cpu')
 
 model = resmasking_dropout1()
-# model.cuda()
+
+if torch.cuda.is_available():
+	model.cuda()
 
 model.load_state_dict(state["net"])
 model.eval()
@@ -44,7 +51,8 @@ def recognize_face(face):
         face = ensure_color(face)
         face = ensure_size(face)
         face = transform(face)
-        # face = transform(face).cuda()
+        if torch.cuda.is_available():
+        	face = face.cuda()
         face = torch.unsqueeze(face, dim=0)
 
         start = time.time()

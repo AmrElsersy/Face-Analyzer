@@ -116,30 +116,32 @@ class Face_Analyzer:
                          "not focus": status["not focus"]},
                 'time': str(int(time.time() / (max((self.args.interval/1000), 1e-4))))
             }
+
             requests.post(self.args.url, json=info)
 
-            cv2.imshow('input face', cv2.resize(input_face, (120, 120)))
-            cv2.rectangle(frame, (x, y), (x + w, y + h), (200, 100, 0), 3)
-            cv2.putText(
-                frame,
-                focus,
-                (x, y + 1),
-                cv2.FONT_HERSHEY_SIMPLEX,
-                0.8,
-                (0, 200, 200),
-                2,
-            )
-            cv2.putText(
-                frame,
-                "{} {}".format(emo_label, int(emo_proba * 100)),
-                (x+w, y + 1),
-                cv2.FONT_HERSHEY_SIMPLEX,
-                0.8,
-                (0, 200, 200),
-                2,
-            )
+            if self.args.show:
 
-        cv2.imshow("Video", frame)
+                cv2.rectangle(frame, (x, y), (x + w, y + h), (200, 100, 0), 3)
+                cv2.putText(
+                    frame,
+                    focus,
+                    (x, y + 1),
+                    cv2.FONT_HERSHEY_SIMPLEX,
+                    0.8,
+                    (0, 200, 200),
+                    2,
+                )
+                cv2.putText(
+                    frame,
+                    "{} {}".format(emo_label, int(emo_proba * 100)),
+                    (x+w, y + 1),
+                    cv2.FONT_HERSHEY_SIMPLEX,
+                    0.8,
+                    (0, 200, 200),
+                    2,
+                )
+        if self.args.show:
+            cv2.imshow("Face Analysis", frame)
 
         # if not self.args.image:
         #     self.video.release()
